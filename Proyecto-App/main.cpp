@@ -70,8 +70,7 @@ ImVec4 color_figura = ImVec4(217.0f / 255.0f, 199.0f / 255.0f, 10.0f / 255.0f, 1
 
 vector<double> vertices; // VECTOR PARA ALMACENAR LOS VERTICES DE SU FIGURA
 
-int main()
-{
+int main() {
     if (!glfwInit())
         exit(EXIT_FAILURE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -82,7 +81,6 @@ int main()
         exit(EXIT_FAILURE);
     cout << "GL_VERSION: " << glGetString(GL_VERSION) << endl;
     glfwSwapInterval(0);
-
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -90,8 +88,7 @@ int main()
 
     init(window);
 
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)){
         glfwPollEvents();
         display(window, glfwGetTime());
         glfwSwapBuffers(window);
@@ -110,16 +107,12 @@ int main()
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
-
-void buildSphere(glm::vec3 center, double radius, int numPointX, int numPointY) // EJEMPLO DE FUNCION GENERADORA DE PUNTOS
-{
+// EJEMPLO DE FUNCION GENERADORA DE PUNTOS
+void buildSphere(glm::vec3 center, double radius, int numPointX, int numPointY) {
     double incX = 2 * PI / numPointX;
     double incY = PI / numPointY;
-
-    for (double j = 0.0; j <= 2 * PI; j += incX)
-    {
-        for (double i = 0.0; i <= PI; i += incY)
-        {
+    for (double j = 0.0; j <= 2 * PI; j += incX) {
+        for (double i = 0.0; i <= PI; i += incY) {
             glm::vec3 p;
             p.x = center.x + radius * sin(j) * cos(i);
             p.y = center.y + radius * sin(j) * sin(i);
@@ -130,9 +123,8 @@ void buildSphere(glm::vec3 center, double radius, int numPointX, int numPointY) 
         }
     }
 }
-
-void setupVertices(void) // FUNCION: GENERA TODOS LOS VERTICES DE LA FIGURA (C++) Y LO MANDA AL VBO (GPU) 
-{
+// FUNCION: GENERA TODOS LOS VERTICES DE LA FIGURA (C++) Y LO MANDA AL VBO (GPU)
+void setupVertices(void)  {
     buildSphere(glm::vec3(0, 0, 0), 0.5, 10, 10); // LLAMAN A LA FUNCION QUE GENERA SUS PUNTOS PARA QUE LLENE EL VECTOR "vertices"
 
     /*
@@ -150,8 +142,7 @@ void setupVertices(void) // FUNCION: GENERA TODOS LOS VERTICES DE LA FIGURA (C++
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(double), &vertices[0], GL_STATIC_DRAW); // PUSH DATA OF "vertices" TO VBO[0]
 }
 
-void init(GLFWwindow *window)
-{
+void init(GLFWwindow *window) {
     /* --------------- [INICIALIZACION DE IMGUI] --------------- */
     // (No es muy importante conocer esta parte)
     ImGui::CreateContext();
@@ -178,8 +169,7 @@ void init(GLFWwindow *window)
     glUniformMatrix4fv(glGetUniformLocation(renderingProgram, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(pMat)); // ENVIA LA MATRIZ DE PROYECCION AL SHADER - wiki: la matriz de proyeccion sirve para el efecto de 'profundidad' cuando el objeto es alejado de la camara
 }
 
-void display(GLFWwindow *window, double currentTime)
-{
+void display(GLFWwindow *window, double currentTime) {
     /* --------------------- INICIA VENTANA IMGUI ---------------------*/
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -223,23 +213,16 @@ void display(GLFWwindow *window, double currentTime)
 
 /* -------------------------------- CONTROLES -------------------------------------- */
 
-void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
-{
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-    {
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods){
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
         glfwGetCursorPos(window, &oldX, &oldY);
         dragging = true;
-    }
-    else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
-    {
+    } else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
         dragging = false;
-    }
 }
 
-void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
-{
-    if (dragging)
-    {
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
+    if (dragging) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -257,18 +240,15 @@ void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
     }
 }
 
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
-{
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset){
     double sensibilidad = 1.09;
-    if (yoffset != 0)
-    {
+    if (yoffset != 0) {
         zoom = yoffset > 0 ? sensibilidad : 1 / sensibilidad;
         transf = glm::scale(transf, glm::vec3(zoom, zoom, zoom));
     }
 }
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     double vel = 0.15 / zoom;
     if ((key == GLFW_KEY_LEFT || key == GLFW_KEY_A) && action == GLFW_PRESS)
         transf = glm::translate(transf, glm::vec3(-vel, 0.0, 0.0));
