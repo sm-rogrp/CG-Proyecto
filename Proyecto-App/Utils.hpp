@@ -13,9 +13,8 @@ namespace Utils{
         std::ifstream fileStream(filePath, std::ios::in);
         std::string line = "";
 
-        while(getline(fileStream, line)) {
+        while(getline(fileStream, line))
             content.append(line + "\n");
-        }
 
         fileStream.close();
         return content;

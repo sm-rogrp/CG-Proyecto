@@ -2,7 +2,7 @@
  * 		MOVERSE CON WASD O LAS FLECHITAS
  * 		AGRANDAR O ENCOGER CON EL SCROLL DEL MOUSE
  * 		ROTAR ARRASTRANDO CON CLICK DERECHO PRESIONADO
- * */
+*/
 
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_glfw.h"
@@ -27,10 +27,6 @@
 #define PI 3.14
 #define WIDTH 800
 #define HEIGHT 800
-
-#define PI 3.14
-
-using namespace std;
 
 GLuint renderingProgram;
 GLuint vao[numVAOs];
@@ -68,7 +64,7 @@ ImVec4 fondo = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);                              
 ImVec4 color_figura = ImVec4(217.0f / 255.0f, 199.0f / 255.0f, 10.0f / 255.0f, 1.00f); // COLOR INICIAL DE SU FIGURA (DEFAULT)
 /*---------- ----------------------------------------------------------*/
 
-vector<double> vertices; // VECTOR PARA ALMACENAR LOS VERTICES DE SU FIGURA
+std::vector<double> vertices; // VECTOR PARA ALMACENAR LOS VERTICES DE SU FIGURA
 
 int main() {
     if (!glfwInit())
@@ -79,7 +75,7 @@ int main() {
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK)
         exit(EXIT_FAILURE);
-    cout << "GL_VERSION: " << glGetString(GL_VERSION) << endl;
+    std::cout << "GL_VERSION: " << glGetString(GL_VERSION) << std::endl;
     glfwSwapInterval(0);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -179,7 +175,7 @@ void display(GLFWwindow *window, double currentTime) {
     ImGui::ColorEdit3("Color de fondo", (float *)&fondo);         // COLOR EDIT PARA CAMBIAR EL COLOR DE FONDO
     ImGui::ColorEdit3("Color de figura", (float *)&color_figura); // COLOR EDIT PARA CAMBIAR EL COLOR DE SU FIGURA
     ImGui::End();                                                 // FINALIZA LA VENTANA
-
+    /* ---------------------------------------------------------------*/
     glClearColor(fondo.x, fondo.y, fondo.z, fondo.w); // PASAMOS EL COLOR OBTENIDO CON EL COLOREDIT DE IMGUI Y LO ESTABLECEMOS COMO COLOR DE FONDO
     glClear(GL_COLOR_BUFFER_BIT);                     // PINTAMOS EL FONDO
 
