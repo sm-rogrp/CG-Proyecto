@@ -79,39 +79,21 @@ void Torus::initData()
 
     num_indices = indices.size();
 
-    // vao.create();
-    // vao.bind();
-    // VertexBuffer vbo(&vertices[0], vertices.size() * sizeof(float));
-    // VertexBufferLayout layout;
-    // layout.AddFloat(3);
-    // vao.addBuffer(vbo, layout);
-    // ibo = {&indices[0], indices.size()};
-
-    glGenVertexArrays(1, vao);
-    glBindVertexArray(vao[0]);
-
-    glGenBuffers(1, vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
+    vao.create();
+    vao.bind();
+    VertexBuffer vbo(&vertices[0], vertices.size() * sizeof(float));
+    VertexBufferLayout layout;
+    layout.AddFloat(3);
+    vao.addBuffer(vbo, layout);
+    ibo.setData(&indices[0], indices.size());
 
 }
 
 void Torus::render(){
 
-    // vao.bind();
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-    // ibo.bind();
-
-    glBindVertexArray(vao[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+    vao.bind();
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
+    ibo.bind();
 
     glEnable(GL_PRIMITIVE_RESTART);
     glPrimitiveRestartIndex(restart_index);

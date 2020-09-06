@@ -19,7 +19,7 @@ void Shader::readShaders(){
 
 Shader::~Shader()
 {
-    glDeleteProgram(shader_id);
+    //glDeleteProgram(shader_id);
     std::cout<<"DELETE PROGRAM"<<std::endl;
 }
 

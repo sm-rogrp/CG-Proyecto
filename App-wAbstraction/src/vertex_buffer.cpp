@@ -9,7 +9,7 @@ VertexBuffer::VertexBuffer(const void* data, unsigned int size)
 
 VertexBuffer::~VertexBuffer()
 {
-    glDeleteBuffers(1, &m_RendererID);
+    //glDeleteBuffers(1, &m_RendererID);
 }
 
 void VertexBuffer::bind() const
