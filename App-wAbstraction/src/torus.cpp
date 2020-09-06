@@ -17,8 +17,8 @@ void Torus::initData()
     restart_index = num_vertices;
     num_indices = (num_x * 2 * (num_y + 1)) + num_x - 1;
 
-    // build vertices
-    std::vector<float> vertices;
+    // build vertices and normals
+    std::vector<float> vertices, normales;
 
     float dTheta = 2 * PI / float(num_x);
     float dPhi = 2 * PI / float(num_y);
@@ -37,18 +37,31 @@ void Torus::initData()
             float sinPhi = sin(phi);
             float cosPhi = cos(phi);
 
-            float x = (R + r * cosPhi)* cosTheta;
-            float y = (R + r * cosPhi)* sinTheta;
-            float z = r * sinPhi;
+            vertices.push_back((R + r * cosPhi)* cosTheta); // x
+            vertices.push_back((R + r * cosPhi)* sinTheta); // y
+            vertices.push_back(r * sinPhi); // z
 
-            vertices.push_back(x);
-            vertices.push_back(y);
-            vertices.push_back(z);
+            normales.push_back(cosTheta * cosPhi); // x
+            normales.push_back(sinTheta * cosPhi); // y
+            normales.push_back(sinPhi); // z
 
             phi += dPhi;
         }
 
         theta += dTheta;
+    }
+
+    // build vertices to paint normals
+    std::vector<float> lineas_de_normales;
+    float long_linea = 0.02f;
+    for (int i = 0; i < normales.size(); i+=3) {
+        lineas_de_normales.push_back(vertices[i]);
+        lineas_de_normales.push_back(vertices[i+1]);
+        lineas_de_normales.push_back(vertices[i+2]);
+
+        lineas_de_normales.push_back(vertices[i] + normales[i] * long_linea);
+        lineas_de_normales.push_back(vertices[i+1] + normales[i+1] * long_linea);
+        lineas_de_normales.push_back(vertices[i+2] + normales[i+2] * long_linea);
     }
 
     // build indices
@@ -79,20 +92,37 @@ void Torus::initData()
 
     num_indices = indices.size();
 
+    // vao for paint normals
+
+    vao_2.create();
+    vao.bind();
+    VertexBuffer vbo_2;
+    vbo_2.allocate(&lineas_de_normales[0], lineas_de_normales.size() * sizeof(float));
+    VertexBufferLayout layout_2;
+    layout_2.AddFloat(3);
+    vao_2.addBuffer(vbo_2, layout_2);
+    vao_2.unbind();
+
+    // vao for paint fill torus
+
     vao.create();
     vao.bind();
-    VertexBuffer vbo(&vertices[0], vertices.size() * sizeof(float));
+    VertexBuffer vbo;
+    vbo.allocate(&vertices[0], vertices.size() * sizeof(float));
     VertexBufferLayout layout;
     layout.AddFloat(3);
     vao.addBuffer(vbo, layout);
-    ibo.setData(&indices[0], indices.size());
+    vao.unbind();
+
+    ibo.allocate(&indices[0], indices.size());
 
 }
 
-void Torus::render(){
+void Torus::renderFill(){
+
+    // draw torus fill
 
     vao.bind();
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
     ibo.bind();
 
     glEnable(GL_PRIMITIVE_RESTART);
@@ -100,4 +130,13 @@ void Torus::render(){
     glDrawElements(GL_TRIANGLE_STRIP, num_indices, GL_UNSIGNED_INT, (void *)(0));
     glDisable(GL_PRIMITIVE_RESTART);
 
+
+}
+
+void Torus::renderNormals(){
+
+    // draw torus normals
+
+    vao_2.bind();
+    glDrawArrays(GL_LINES, 0, num_vertices*2);
 }

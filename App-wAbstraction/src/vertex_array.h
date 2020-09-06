@@ -11,11 +11,14 @@ class VertexArray
 
     public:
         VertexArray() {}
-        ~VertexArray();
+        ~VertexArray() {}
         void create();
         void addBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
         void bind() const;
         void unbind() const;
+        void destroy() const;
+        inline unsigned int getID() const { return m_RendererID; }
+
 };
 
 #endif

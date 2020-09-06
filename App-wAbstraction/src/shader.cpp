@@ -4,7 +4,6 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-// #include "utils.hpp"
 
 Shader::Shader(const std::string &filepath_v, const std::string &filepath_f)
 {
@@ -12,15 +11,14 @@ Shader::Shader(const std::string &filepath_v, const std::string &filepath_f)
     this->filepathfragment = filepath_f;
 }
 
-void Shader::readShaders(){
-    shader_id = createShaderProgram( filepathvertex.c_str(), filepathfragment.c_str());
-    glUseProgram(shader_id);
+void Shader::setFiles(const std::string &filepath_v, const std::string &filepath_f) {
+    this->filepathvertex = filepath_v;
+    this->filepathfragment = filepath_f;
 }
 
-Shader::~Shader()
-{
-    //glDeleteProgram(shader_id);
-    std::cout<<"DELETE PROGRAM"<<std::endl;
+void Shader::compile(){
+    shader_id = createShaderProgram( filepathvertex.c_str(), filepathfragment.c_str());
+    glUseProgram(shader_id);
 }
 
 void Shader::bind() const
@@ -30,9 +28,7 @@ void Shader::bind() const
 
 void Shader::unbind() const
 {
-    std::cout<<"UNBIND PROGRAM"<<std::endl;
     glUseProgram(0);
-
 }
 
 int Shader::getUniformLocation(const std::string &name)
@@ -70,15 +66,15 @@ void Shader::setUniform4f(const std::string &name, float f0, float f1, float f2,
 void Shader::setUniformMat4fv(const std::string &name, glm::mat4 mat)
 {
     bind();
-    glm::mat4 aux_mat = glm::mat4(mat);
-    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(aux_mat));
+    // glm::mat4 aux_mat = glm::mat4(mat);
+    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void Shader::setUniform3fv(const std::string &name, glm::vec3 vec)
 {
     bind();
-    glm::vec3 aux_vec = glm::vec3(vec);
-    glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(aux_vec));
+    // glm::vec3 aux_vec = glm::vec3(vec);
+    glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(vec));
 }
 
 std::string Shader::readShader(const char *filePath)

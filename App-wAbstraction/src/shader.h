@@ -1,5 +1,6 @@
 #ifndef SHADER_H
 #define SHADER_H
+
 #include <string>
 #include <unordered_map>
 #include <GL\glew.h>
@@ -16,12 +17,14 @@ class Shader
 
     public:
         Shader() {}
+        ~Shader() {}
         Shader(const std::string& filepath_vertex, const std::string& filepath_frament);
-        ~Shader();
 
+        void setFiles(const std::string& filepath_vertex, const std::string& filepath_frament);
         void bind() const;
         void unbind() const;
-        void readShaders();
+        void compile();
+        inline unsigned int getID() const { return shader_id; };
 
         // Set uniforms
         void setUniform4f(const std::string& name, float f0, float f1, float f2, float f3);

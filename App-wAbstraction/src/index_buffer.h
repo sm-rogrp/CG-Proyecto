@@ -9,12 +9,14 @@ class IndexBuffer
 
     public:
         IndexBuffer() {}
-        // IndexBuffer(const unsigned int* indices, unsigned int count);
-        ~IndexBuffer();
-        void setData(const unsigned int* indices, unsigned int count);
+        ~IndexBuffer() {}
+
+        void allocate(const unsigned int* indices, unsigned int count);
         void bind() const;
         void unbind() const;
+        void destroy() const;
 
+        inline unsigned int getID() const { return m_RendererID; }
         inline unsigned int getCount() const { return m_Count; }
 };
 

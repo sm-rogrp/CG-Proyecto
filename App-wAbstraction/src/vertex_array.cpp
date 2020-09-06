@@ -1,15 +1,5 @@
 #include "vertex_array.h"
 
-// VertexArray::VertexArray()
-// {
-//     glGenVertexArrays(1, &m_RendererID);
-// }
-
-VertexArray::~VertexArray()
-{
-    //glDeleteVertexArrays(1, &m_RendererID);
-}
-
 void VertexArray::create(){
     glGenVertexArrays(1, &m_RendererID);
 }
@@ -40,3 +30,7 @@ void VertexArray::unbind() const
     glBindVertexArray(0);
 };
 
+void VertexArray::destroy() const
+{
+    glDeleteVertexArrays(1, &m_RendererID);
+}

@@ -9,11 +9,14 @@ class VertexBuffer
         unsigned int m_RendererID;
 
     public:
-        VertexBuffer(const void* data, unsigned int size);
-        ~VertexBuffer();
+        VertexBuffer() {}
+        ~VertexBuffer() {}
 
+        void allocate(const void* data, unsigned int size);
         void bind() const;
         void unbind() const;
+        void destroy();
+        inline unsigned int getID() const { return m_RendererID; }
 };
 
 #endif

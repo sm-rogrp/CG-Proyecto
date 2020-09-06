@@ -16,90 +16,92 @@
 #include <fstream>
 #include <vector>
 #include <math.h>
-#include <algorithm> 
+#include <algorithm>
 #include <stdlib.h>
 
 #include "controls.hpp"
 #include "imgui_win.hpp"
+#include "utils.hpp"
 
 #include "torus.h"
 #include "shader.h"
 
-class AppOpenGL{
+class AppOpenGL {
 private:
-    glm::mat4 projMat;
-    glm::mat4 modelviewMat;
+	glm::mat4 projMat;
+	glm::mat4 modelviewMat;
 
-public: 
-    AppOpenGL() {}
-    void init();
-    void setup();
-    void display();
-    void cleanAll();
-    bool shouldClose();
-    GLFWwindow *window;
-    int width, heigth;
-    glm::vec3 camera;
-    Shader sp{"src/vertShader.glsl", "src/fragShader.glsl"};
-    unsigned int renderingProgram;
-    Torus torusShape{15, 20, 0.2, 0.05};
+public:
+	AppOpenGL() {
+	}
+	void init();
+	void setup();
+	void display();
+	void cleanAll();
+	bool shouldClose();
+	GLFWwindow *window;
+	int width, heigth;
+	glm::vec3 camera;
+	Shader sp { "src/vertShader.glsl", "src/fragShader.glsl" };
+	unsigned int renderingProgram;
+	Torus torusShape { 15, 20, 0.2, 0.05 };
 };
 
-void AppOpenGL::init(){
+void AppOpenGL::init() {
 
-    width = 800;
-    heigth = 800;
-    camera = glm::vec3(0,0,-0.6);
+	width = 800;
+	heigth = 800;
+	camera = glm::vec3(0, 0, -0.6);
 
-    // glfw init
-    if (!glfwInit()){
-        exit(1);
-        std::cout<<"GLFW Error"<<std::endl;
-    }
+	// glfw init
+	if (!glfwInit()) {
+		exit(1);
+		std::cout << "GLFW Error" << std::endl;
+	}
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
-    
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
 
-    window = glfwCreateWindow(width, heigth, "CG-Project-2020", NULL, NULL);
-    glfwMakeContextCurrent(window);
-    
-    // glew init
-    if (glewInit() != GLEW_OK)
-        exit(1);
-    
-    std::cout << "GL_VERSION: " << glGetString(GL_VERSION) << std::endl;
-    
-    glfwSwapInterval(0);
+	window = glfwCreateWindow(width, heigth, "CG-Project-2020", NULL, NULL);
+	glfwMakeContextCurrent(window);
 
-    glfwSetCursorPosCallback(window, Controls::cursor_position_callback);
-    glfwSetMouseButtonCallback(window, Controls::mouse_button_callback);
-    glfwSetScrollCallback(window, Controls::scroll_callback);
-    glfwSetKeyCallback(window, Controls::key_callback);
+	// glew init
+	if (glewInit() != GLEW_OK)
+		exit(1);
 
-    // imgui init
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
+	std::cout << "GL_VERSION: " << glGetString(GL_VERSION) << std::endl;
+
+	glfwSwapInterval(0);
+
+	glfwSetCursorPosCallback(window, Controls::cursor_position_callback);
+	glfwSetMouseButtonCallback(window, Controls::mouse_button_callback);
+	glfwSetScrollCallback(window, Controls::scroll_callback);
+	glfwSetKeyCallback(window, Controls::key_callback);
+
+	// imgui init
+	ImGui::CreateContext();
+	ImGuiIO &io = ImGui::GetIO();
+	(void) io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 130");
 
 }
 
-void AppOpenGL::setup(){
-    sp.readShaders();
+void AppOpenGL::setup() {
+	sp.compile();
 
-    projMat = glm::perspective(1.0472f, (float)width / (float)heigth, 0.1f, 1000.0f);
-    glUniformMatrix4fv(glGetUniformLocation(renderingProgram, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(projMat));
-    
-    sp.bind();
-    sp.setUniformMat4fv("proj_matrix", projMat);
-    sp.setUniform2f("u_resolution", (float)width, (float)heigth);
-    torusShape.initData();
+	projMat = glm::perspective(1.0472f, (float) width / (float) heigth, 0.1f,
+			1000.0f);
+	sp.setUniformMat4fv("proj_matrix", projMat);
+
+	sp.bind();
+	sp.setUniformMat4fv("proj_matrix", projMat);
+	sp.setUniform2f("u_resolution", (float) width, (float) heigth);
+	torusShape.initData();
 }
 
 void AppOpenGL::display(){
@@ -109,22 +111,24 @@ void AppOpenGL::display(){
     modelviewMat = glm::translate(glm::mat4(1.0f), glm::vec3(camera));
     modelviewMat *= Controls::getTransf();
 
-    glUniformMatrix4fv(glGetUniformLocation(renderingProgram, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(modelviewMat));
     sp.setUniformMat4fv("mv_matrix", modelviewMat);
-    
+
     glClearColor(ImGuiWin::fondo.x,
-                 ImGuiWin::fondo.y, 
-                 ImGuiWin::fondo.z, 
+                 ImGuiWin::fondo.y,
+                 ImGuiWin::fondo.z,
                  ImGuiWin::fondo.w);
-    
+
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glm::vec3 color = glm::vec3(ImGuiWin::color_figura.x, 
-                                ImGuiWin::color_figura.y, 
-                                ImGuiWin::color_figura.z); 
+    glm::vec3 color = glm::vec3(ImGuiWin::color_figura.x,
+                                ImGuiWin::color_figura.y,
+                                ImGuiWin::color_figura.z);
 
     sp.setUniform3fv("u_color", color);
-    torusShape.render();
+    torusShape.renderFill();
+
+    sp.setUniform3fv("u_color", glm::vec3(1,0,0));
+    torusShape.renderNormals();
 
     ImGuiWin::renderMainWindow();
     ImGuiWin::endMainWindow();
@@ -134,14 +138,14 @@ void AppOpenGL::display(){
 
 }
 
-void AppOpenGL::cleanAll(){
-    ImGuiWin::cleanAll();
-    glfwDestroyWindow(window);
-    glfwTerminate();
+void AppOpenGL::cleanAll() {
+	ImGuiWin::cleanAll();
+	glfwDestroyWindow(window);
+	glfwTerminate();
 }
 
-bool AppOpenGL::shouldClose(){
-    return glfwWindowShouldClose(window);
+bool AppOpenGL::shouldClose() {
+	return glfwWindowShouldClose(window);
 }
 
 #endif

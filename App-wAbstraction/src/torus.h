@@ -15,6 +15,7 @@ public:
     unsigned int restart_index;
 
     VertexArray vao;
+    VertexArray vao_2; // dibujar normales
     IndexBuffer ibo;
 
     float R, r;
@@ -23,7 +24,8 @@ public:
     Torus(int num_x, int num_y, float R, float r);
     
     void initData();
-    void render();
+    void renderFill();
+    void renderNormals();
 };
 
 #endif
