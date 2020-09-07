@@ -7,7 +7,8 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\type_ptr.hpp>
 
-class Shader {
+class Shader
+{
     private:
         unsigned int shader_id = 0;
         std::string filepathfragment;
@@ -18,12 +19,12 @@ class Shader {
         Shader() {}
         ~Shader() {}
         Shader(const std::string& filepath_vertex, const std::string& filepath_frament);
-
-        void setFiles(const std::string& filepath_vertex, const std::string& filepath_frament);
+        
+        void setFiles(const std::string& filepath_vertex, const std::string& filepath_frament); 
         void bind() const;
         void unbind() const;
         void compile();
-        inline unsigned int getID() const { return shader_id; };
+        inline unsigned int getID() const { return shader_id; }; 
 
         // Set uniforms
         void setUniform4f(const std::string& name, float f0, float f1, float f2, float f3);
@@ -31,7 +32,7 @@ class Shader {
         void setUniform2f(const std::string& name, float f1, float f2);
         void setUniformMat4fv(const std::string& name, glm::mat4 mat);
         void setUniform3fv(const std::string& name, glm::vec3 vec);
-
+        void setUniform1i(const std::string& name, int val);
     private:
         int getUniformLocation(const std::string& name);
         std::string readShader(const char *filePath);

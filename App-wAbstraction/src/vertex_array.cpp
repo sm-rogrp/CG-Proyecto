@@ -4,7 +4,8 @@ void VertexArray::create(){
     glGenVertexArrays(1, &m_RendererID);
 }
 
-void VertexArray::addBuffer(const VertexBuffer &vb, const VertexBufferLayout &layout) {
+void VertexArray::addBuffer(const VertexBuffer &vb, const VertexBufferLayout &layout)
+{
     bind();
     vb.bind();
     const std::vector<VertexBufferElement> elements = layout.GetElements();
@@ -19,14 +20,17 @@ void VertexArray::addBuffer(const VertexBuffer &vb, const VertexBufferLayout &la
     }
 }
 
-void VertexArray::bind() const {
+void VertexArray::bind() const
+{
     glBindVertexArray(m_RendererID);
 }
 
-void VertexArray::unbind() const {
+void VertexArray::unbind() const
+{
     glBindVertexArray(0);
 };
 
-void VertexArray::destroy() const {
+void VertexArray::destroy() const
+{
     glDeleteVertexArrays(1, &m_RendererID);
 }

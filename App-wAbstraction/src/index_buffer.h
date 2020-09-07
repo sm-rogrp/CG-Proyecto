@@ -15,7 +15,7 @@ class IndexBuffer
         void bind() const;
         void unbind() const;
         void destroy() const;
-
+        
         inline unsigned int getID() const { return m_RendererID; }
         inline unsigned int getCount() const { return m_Count; }
 };

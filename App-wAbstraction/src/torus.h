@@ -6,7 +6,7 @@
 #include "index_buffer.h"
 #include "vertex_buffer_layout.h"
 
-class Torus {
+class Torus{
 public:
     unsigned int num_vertices;
     unsigned int num_indices;
@@ -14,9 +14,12 @@ public:
     unsigned int num_y;
     unsigned int restart_index;
 
-    VertexArray vao;
-    VertexArray vao_2; // dibujar normales
-    IndexBuffer ibo;
+    VertexArray vao; // dibujar "fill" torus
+    VertexBuffer vbo; // vertices 
+    VertexBuffer vbo_norm; // normales
+    IndexBuffer ibo; // indices
+
+    VertexArray vao_2; // dibujar normales de torus
 
     float R, r;
 
@@ -26,6 +29,7 @@ public:
     void initData();
     void renderFill();
     void renderNormals();
+    void renderWire();
 };
 
 #endif

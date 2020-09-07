@@ -4,7 +4,8 @@
 #include "vertex_buffer.h"
 #include "vertex_buffer_layout.h"
 
-class VertexArray {
+class VertexArray
+{
     private:
         unsigned int m_RendererID;
 
@@ -16,7 +17,7 @@ class VertexArray {
         void bind() const;
         void unbind() const;
         void destroy() const;
-        inline unsigned int getID() const { return m_RendererID; }
+        inline unsigned int getID() const { return m_RendererID; } 
 
 };
 
