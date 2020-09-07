@@ -1,5 +1,4 @@
 #include "shader.h"
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -46,8 +45,7 @@ void Shader::setUniform1f(const std::string &name, float value) {
     glUniform1f(getUniformLocation(name), value);
 }
 
-void Shader::setUniform2f(const std::string &name, float f1, float f2)
-{
+void Shader::setUniform2f(const std::string &name, float f1, float f2) {
     bind();
     glUniform2f(getUniformLocation(name), f1, f2);
 }
@@ -63,30 +61,25 @@ void Shader::setUniformMat4fv(const std::string &name, glm::mat4 mat) {
     glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-void Shader::setUniform3fv(const std::string &name, glm::vec3 vec)
-{
+void Shader::setUniform3fv(const std::string &name, glm::vec3 vec) {
     bind();
     // glm::vec3 aux_vec = glm::vec3(vec);
     glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(vec));
 }
 
-std::string Shader::readShader(const char *filePath)
-{
+std::string Shader::readShader(const char *filePath) {
     std::string content;
     std::ifstream fileStream(filePath, std::ios::in);
     std::string line = "";
 
     while (getline(fileStream, line))
-    {
         content.append(line + "\n");
-    }
 
     fileStream.close();
     return content;
 }
 
-unsigned int Shader::createShaderProgram(const char *file_vs, const char *file_fs)
-{
+unsigned int Shader::createShaderProgram(const char *file_vs, const char *file_fs) {
     std::string str_src_vs = readShader(file_vs);
     std::string str_src_fs = readShader(file_fs);
 

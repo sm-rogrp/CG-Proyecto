@@ -4,16 +4,13 @@
 #include <vector>
 #include <GL/glew.h>
 
-struct VertexBufferElement
-{
+struct VertexBufferElement {
     unsigned int type;
     unsigned int count;
     unsigned char normalized;
 
-    static unsigned int GetSizeOfType(unsigned int type)
-    {
-        switch (type)
-        {
+    static unsigned int GetSizeOfType(unsigned int type) {
+        switch (type) {
             case GL_FLOAT         : return sizeof(GLfloat);
             case GL_UNSIGNED_INT  : return sizeof(GLuint);
             case GL_UNSIGNED_BYTE : return sizeof(GLbyte);
@@ -22,8 +19,7 @@ struct VertexBufferElement
     }
 };
 
-class VertexBufferLayout
-{
+class VertexBufferLayout {
     private:
         unsigned int m_Stride;
         std::vector<VertexBufferElement> m_Elements;
@@ -40,8 +36,7 @@ class VertexBufferLayout
         inline unsigned int GetStride() const { return m_Stride; };
 
     private:
-        void Push(unsigned int type, unsigned int count, unsigned char normalized)
-        {
+        void Push(unsigned int type, unsigned int count, unsigned char normalized) {
             m_Elements.push_back({type, count, normalized});
             m_Stride += count * VertexBufferElement::GetSizeOfType(type);
         };

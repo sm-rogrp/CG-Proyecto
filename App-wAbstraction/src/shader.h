@@ -7,8 +7,7 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\type_ptr.hpp>
 
-class Shader
-{
+class Shader {
     private:
         unsigned int shader_id = 0;
         std::string filepathfragment;
