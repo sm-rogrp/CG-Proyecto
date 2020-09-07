@@ -185,6 +185,8 @@ void AppOpenGL::display(){
 	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(2.5); // "ancho" de lineas
 
     glm::vec3 color;
 
@@ -205,9 +207,11 @@ void AppOpenGL::display(){
     }
 
     if (ImGuiWin::show_normals){
+
         sp.setUniform1i("show_smooth", 0);
         sp.setUniform3fv("u_color", glm::vec3(1,0,0)); // color rojo
         torusShape.renderNormals();
+        //glDisable(GL_LINE_SMOOTH);
     }
 
     if (ImGuiWin::show_wire){
