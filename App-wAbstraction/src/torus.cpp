@@ -7,32 +7,28 @@
 
 #define PI 3.14
 
-Torus::Torus(int n_x, int n_y, float Rad, float rad) : num_x(n_x), num_y(n_y), r(rad), R(Rad)
-{
-}
-
 void Torus::initData()
 {
-    num_vertices = (num_x + 1) * (num_y + 1);
+    num_vertices = (seg_x + 1) * (seg_y + 1);
     restart_index = num_vertices;
-    num_indices = (num_x * 2 * (num_y + 1)) + num_x - 1;
+    num_indices = (seg_x * 2 * (seg_y + 1)) + seg_x - 1;
 
     // build vertices and normals   
     std::vector<float> vertices, normales;
 
-    float dTheta = 2 * PI / float(num_x);
-    float dPhi = 2 * PI / float(num_y);
+    float dTheta = 2 * PI / float(seg_x);
+    float dPhi = 2 * PI / float(seg_y);
 
     float theta = 0.0f;
 
-    for (int i = 0; i <= num_x; i++)
+    for (int i = 0; i <= seg_x; i++)
     {
         float phi = 0.0f;
 
         float sinTheta = sin(theta);
         float cosTheta = cos(theta);
 
-        for (int j = 0; j <= num_y; j++)
+        for (int j = 0; j <= seg_y; j++)
         {
             float sinPhi = sin(phi);
             float cosPhi = cos(phi);
@@ -79,33 +75,30 @@ void Torus::initData()
     // build indices
     std::vector<unsigned int> indices;
     GLuint index = 0;
-    for (auto i = 0; i < num_x; i++)
+    for (auto i = 0; i < seg_x; i++)
     {
-        for (auto j = 0; j <= num_y; j++)
+        for (auto j = 0; j <= seg_y; j++)
         {
             indices.push_back(index);
-            indices.push_back(index + num_y + 1);
+            indices.push_back(index + seg_y + 1);
             index++;
         }
-        if (i != num_x - 1) {
+        if (i != seg_x - 1) {
             indices.push_back(restart_index);
       }
     }
 
-    unsigned int index_b = (1+num_y)*num_x;
+    unsigned int index_b = (1+seg_y)*seg_x;
     index = 0;
-    for (auto j = 0; j <= num_y; j++)
+    for (auto j = 0; j <= seg_y; j++)
         {
             indices.push_back(index_b);
-            indices.push_back(index + num_y + 1);
+            indices.push_back(index + seg_y + 1);
             index++;
             index_b++;
         }
 
     num_indices = indices.size();
-
-
-
 
     // vao for paint normals
     vao_2.create();
@@ -117,28 +110,15 @@ void Torus::initData()
     vao_2.addBuffer(vbo_2, layout_2);
     vao_2.unbind();
 
-    // // vao for paint torus (vertices and normals)
+    // vao for paint torus (vertices and normals)
     vao.create();
     vao.bind();
-    // vbo.allocate(&vertices[0], vertices.size() * sizeof(float));
     vbo.allocate(&vert_and_norm[0], vert_and_norm.size() * sizeof(float));
     VertexBufferLayout layout;
     layout.AddFloat(3); // vertices
     layout.AddFloat(3); // normales
     vao.addBuffer(vbo, layout);
     vao.unbind();
-
-    // vao.create();
-    // vao.bind();
-    // VertexBuffer vbo_vertices;
-    // vbo_vertices.allocate(&vertices[0], vertices.size() * sizeof(float));
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-    // VertexBuffer vbo_normales;
-    // vbo_vertices.allocate(&normales[0], normales.size() * sizeof(float));
-    // glEnableVertexAttribArray(1);
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     ibo.allocate(&indices[0], indices.size());
 
@@ -166,7 +146,9 @@ void Torus::renderNormals(){
 }
 
 void Torus::renderWire() {
+
     // draw "wire" mode
+
     vao.bind();
     ibo.bind();
 
