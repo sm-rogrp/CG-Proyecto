@@ -4,8 +4,7 @@
 #include "vertex_buffer.h"
 #include "vertex_buffer_layout.h"
 
-class VertexArray
-{
+class VertexArray {
     private:
         unsigned int m_RendererID;
 

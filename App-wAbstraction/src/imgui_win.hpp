@@ -11,14 +11,12 @@
 #include <glm\gtc\type_ptr.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
-namespace ImGuiWin
-{
+namespace ImGuiWin {
 
     ImVec4 fondo = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     ImVec4 color_figura = ImVec4(217.0f / 255.0f, 199.0f / 255.0f, 10.0f / 255.0f, 1.00f);
 
-    void renderMainWindow()
-    {
+    void renderMainWindow() {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -29,14 +27,12 @@ namespace ImGuiWin
         ImGui::End();                                                 // FINALIZA LA VENTANA
     }
 
-    void endMainWindow()
-    {
+    void endMainWindow() {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
-    void cleanAll()
-    {
+    void cleanAll() {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();

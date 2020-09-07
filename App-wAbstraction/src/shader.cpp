@@ -5,8 +5,7 @@
 #include <string>
 #include <sstream>
 
-Shader::Shader(const std::string &filepath_v, const std::string &filepath_f)
-{
+Shader::Shader(const std::string &filepath_v, const std::string &filepath_f) {
     this->filepathvertex = filepath_v;
     this->filepathfragment = filepath_f;
 }
@@ -16,23 +15,20 @@ void Shader::setFiles(const std::string &filepath_v, const std::string &filepath
     this->filepathfragment = filepath_f;
 }
 
-void Shader::compile(){
+void Shader::compile() {
     shader_id = createShaderProgram( filepathvertex.c_str(), filepathfragment.c_str());
     glUseProgram(shader_id);
 }
 
-void Shader::bind() const
-{
+void Shader::bind() const {
     glUseProgram(shader_id);
 }
 
-void Shader::unbind() const
-{
+void Shader::unbind() const {
     glUseProgram(0);
 }
 
-int Shader::getUniformLocation(const std::string &name)
-{
+int Shader::getUniformLocation(const std::string &name) {
     if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
         return m_UniformLocationCache[name];
 
@@ -45,8 +41,7 @@ int Shader::getUniformLocation(const std::string &name)
     return location;
 }
 
-void Shader::setUniform1f(const std::string &name, float value)
-{
+void Shader::setUniform1f(const std::string &name, float value) {
     bind();
     glUniform1f(getUniformLocation(name), value);
 }
@@ -57,14 +52,12 @@ void Shader::setUniform2f(const std::string &name, float f1, float f2)
     glUniform2f(getUniformLocation(name), f1, f2);
 }
 
-void Shader::setUniform4f(const std::string &name, float f0, float f1, float f2, float f3)
-{
+void Shader::setUniform4f(const std::string &name, float f0, float f1, float f2, float f3) {
     bind();
     glUniform4f(getUniformLocation(name), f0, f1, f2, f3);
 }
 
-void Shader::setUniformMat4fv(const std::string &name, glm::mat4 mat)
-{
+void Shader::setUniformMat4fv(const std::string &name, glm::mat4 mat) {
     bind();
     // glm::mat4 aux_mat = glm::mat4(mat);
     glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(mat));

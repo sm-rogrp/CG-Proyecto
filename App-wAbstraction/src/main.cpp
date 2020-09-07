@@ -9,9 +9,7 @@ int main(){
     app.setup();
 
     while (!app.shouldClose())
-    {
         app.display();
-    }
 
     app.cleanAll();
 }

@@ -6,24 +6,19 @@
 #include <string>
 #include <fstream>
 
-namespace Utils
-{
-    std::string readShader(const char *filePath)
-    {
+namespace Utils {
+    std::string readShader(const char *filePath) {
         std::string content;
         std::ifstream fileStream(filePath, std::ios::in);
         std::string line = "";
 
         while (getline(fileStream, line))
-        {
             content.append(line + "\n");
-        }
 
         fileStream.close();
         return content;
     }
-    unsigned int createShaderProgram(const char *file_vs, const char *file_fs)
-    {
+    unsigned int createShaderProgram(const char *file_vs, const char *file_fs) {
         std::string str_src_vs = readShader(file_vs);
         std::string str_src_fs = readShader(file_fs);
 

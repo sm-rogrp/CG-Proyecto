@@ -6,7 +6,7 @@
 #include "index_buffer.h"
 #include "vertex_buffer_layout.h"
 
-class Torus{
+class Torus {
 public:
     unsigned int num_vertices;
     unsigned int num_indices;

@@ -15,8 +15,7 @@ void IndexBuffer::allocate(const unsigned int* indices, unsigned int count){
 
 }
 
-void IndexBuffer::bind() const
-{
+void IndexBuffer::bind() const{
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID) ;
 }
 
