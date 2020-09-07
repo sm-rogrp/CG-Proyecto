@@ -32,8 +32,7 @@ private:
 	glm::mat4 modelviewMat;
 
 public:
-	AppOpenGL() {
-	}
+	AppOpenGL() {}
 	void init();
 	void setup();
 	void display();
@@ -48,12 +47,10 @@ public:
 };
 
 void AppOpenGL::init() {
-
 	width = 800;
 	heigth = 800;
 	camera = glm::vec3(0, 0, -0.6);
 
-	// glfw init
 	if (!glfwInit()) {
 		exit(1);
 		std::cout << "GLFW Error" << std::endl;
@@ -68,7 +65,6 @@ void AppOpenGL::init() {
 	window = glfwCreateWindow(width, heigth, "CG-Project-2020", NULL, NULL);
 	glfwMakeContextCurrent(window);
 
-	// glew init
 	if (glewInit() != GLEW_OK)
 		exit(1);
 
@@ -81,7 +77,6 @@ void AppOpenGL::init() {
 	glfwSetScrollCallback(window, Controls::scroll_callback);
 	glfwSetKeyCallback(window, Controls::key_callback);
 
-	// imgui init
 	ImGui::CreateContext();
 	ImGuiIO &io = ImGui::GetIO();
 	(void) io;

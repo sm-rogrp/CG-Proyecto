@@ -35,8 +35,7 @@ const int MIN_STACK_COUNT  = 2;
 ///////////////////////////////////////////////////////////////////////////////
 // ctor
 ///////////////////////////////////////////////////////////////////////////////
-Sphere::Sphere(float radius, int sectors, int stacks, bool smooth) : interleavedStride(32)
-{
+Sphere::Sphere(float radius, int sectors, int stacks, bool smooth) : interleavedStride(32) {
     set(radius, sectors, stacks, smooth);
 }
 
@@ -45,8 +44,7 @@ Sphere::Sphere(float radius, int sectors, int stacks, bool smooth) : interleaved
 ///////////////////////////////////////////////////////////////////////////////
 // setters
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::set(float radius, int sectors, int stacks, bool smooth)
-{
+void Sphere::set(float radius, int sectors, int stacks, bool smooth) {
     this->radius = radius;
     this->sectorCount = sectors;
     if(sectors < MIN_SECTOR_COUNT)
@@ -62,26 +60,22 @@ void Sphere::set(float radius, int sectors, int stacks, bool smooth)
         buildVerticesFlat();
 }
 
-void Sphere::setRadius(float radius)
-{
+void Sphere::setRadius(float radius) {
     if(radius != this->radius)
         set(radius, sectorCount, stackCount, smooth);
 }
 
-void Sphere::setSectorCount(int sectors)
-{
+void Sphere::setSectorCount(int sectors) {
     if(sectors != this->sectorCount)
         set(radius, sectors, stackCount, smooth);
 }
 
-void Sphere::setStackCount(int stacks)
-{
+void Sphere::setStackCount(int stacks) {
     if(stacks != this->stackCount)
         set(radius, sectorCount, stacks, smooth);
 }
 
-void Sphere::setSmooth(bool smooth)
-{
+void Sphere::setSmooth(bool smooth) {
     if(this->smooth == smooth)
         return;
 
@@ -97,8 +91,7 @@ void Sphere::setSmooth(bool smooth)
 ///////////////////////////////////////////////////////////////////////////////
 // print itself
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::printSelf() const
-{
+void Sphere::printSelf() const {
     std::cout << "===== Sphere =====\n"
               << "        Radius: " << radius << "\n"
               << "  Sector Count: " << sectorCount << "\n"
@@ -117,8 +110,7 @@ void Sphere::printSelf() const
 // draw a sphere in VertexArray mode
 // OpenGL RC must be set before calling it
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::draw() const
-{
+void Sphere::draw() const {
     // interleaved array
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -140,8 +132,7 @@ void Sphere::draw() const
 // draw lines only
 // the caller must set the line width before call this
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::drawLines(const float lineColor[4]) const
-{
+void Sphere::drawLines(const float lineColor[4]) const {
     // set line colour
     glColor4fv(lineColor);
     glMaterialfv(GL_FRONT, GL_DIFFUSE,   lineColor);
@@ -165,8 +156,7 @@ void Sphere::drawLines(const float lineColor[4]) const
 // draw a sphere surfaces and lines on top of it
 // the caller must set the line width before call this
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::drawWithLines(const float lineColor[4]) const
-{
+void Sphere::drawWithLines(const float lineColor[4]) const {
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0, 1.0f); // move polygon backward
     this->draw();
@@ -207,8 +197,7 @@ void Sphere::updateRadius()
 ///////////////////////////////////////////////////////////////////////////////
 // dealloc vectors
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::clearArrays()
-{
+void Sphere::clearArrays() {
     std::vector<float>().swap(vertices);
     std::vector<float>().swap(normals);
     std::vector<float>().swap(texCoords);
@@ -226,8 +215,7 @@ void Sphere::clearArrays()
 // where u: stack(latitude) angle (-90 <= u <= 90)
 //       v: sector(longitude) angle (0 <= v <= 360)
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::buildVerticesSmooth()
-{
+void Sphere::buildVerticesSmooth() {
     const float PI = acos(-1);
 
     // clear memory of prev arrays
@@ -277,13 +265,11 @@ void Sphere::buildVerticesSmooth()
     //  | /  |
     //  k2--k2+1
     unsigned int k1, k2;
-    for(int i = 0; i < stackCount; ++i)
-    {
+    for(int i = 0; i < stackCount; ++i) {
         k1 = i * (sectorCount + 1);     // beginning of current stack
         k2 = k1 + sectorCount + 1;      // beginning of next stack
 
-        for(int j = 0; j < sectorCount; ++j, ++k1, ++k2)
-        {
+        for(int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
             // 2 triangles per sector excluding 1st and last stacks
             if(i != 0)
             {

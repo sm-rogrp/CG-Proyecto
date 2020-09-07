@@ -14,8 +14,7 @@
 
 #include <vector>
 
-class Sphere
-{
+class Sphere {
 public:
     // ctor/dtor
     Sphere(float radius=1.0f, int sectorCount=36, int stackCount=18, bool smooth=true);
