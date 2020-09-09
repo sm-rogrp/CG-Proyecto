@@ -1,15 +1,16 @@
 #ifndef APP_HPP
 #define APP_HPP
 
-#include "..\imgui\imgui.h"
-#include "..\imgui\imgui_impl_glfw.h"
-#include "..\imgui\imgui_impl_opengl3.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
-#include <GL\glew.h>
-#include <GLFW\glfw3.h>
-#include <glm\glm.hpp>
-#include <glm\gtc\type_ptr.hpp>
-#include <glm\gtc\matrix_transform.hpp>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <string>
 #include <iostream>
@@ -72,8 +73,8 @@ private:
 
 void AppOpenGL::init() {
 
-    width = 800;
-    heigth = 800;
+    width = 600;
+    heigth = 600;
     camera = glm::vec3(0,0,-0.6);
 
     // glfw init
@@ -82,7 +83,7 @@ void AppOpenGL::init() {
         std::cout<<"GLFW Error"<<std::endl;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -134,7 +135,7 @@ void AppOpenGL::setup()
 
 void AppOpenGL::installLights(glm::mat4 vMatrix)
 {
-    // convert light’s position to view space, and save it in a float array
+    // convert lightï¿½s position to view space, and save it in a float array
     lightPosV = glm::vec3(vMatrix * glm::vec4(currentLightPos, 1.0));
     lightPos[0] = lightPosV.x;
     lightPos[1] = lightPosV.y;

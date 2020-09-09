@@ -1,5 +1,5 @@
 #include "index_buffer.h"
-#include <GL\glew.h>
+#include <GL/glew.h>
 #include <iostream>
 
 void IndexBuffer::destroy() const{

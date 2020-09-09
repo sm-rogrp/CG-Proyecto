@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include <vector>
-#include <GL\glew.h>
+#include <GL/glew.h>
 #include <iostream>
 
 #define PI 3.14
