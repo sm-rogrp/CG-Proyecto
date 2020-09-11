@@ -1,9 +1,9 @@
 #ifndef APP_HPP
 #define APP_HPP
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "..\imgui/imgui.h"
+#include "..\imgui/imgui_impl_glfw.h"
+#include "..\imgui/imgui_impl_opengl3.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -27,6 +27,8 @@
 #include "utils.h"
 #include "torus.h"
 #include "cube.h"
+#include "sphere.h"
+
 
 
 class AppOpenGL{
@@ -48,6 +50,8 @@ public:
 	Shader sp { "src/vertShader.glsl", "src/fragShader.glsl" };
     Torus torusShape{10, 10, 0.2, 0.05};
     Cube cubeShape{5, 5, 0.4};
+    Sphere sphereShape{0.05, 10, 10, true};
+
 private:
     	/* Ligthing */
     void installLights(glm::mat4 vMatrix);
@@ -130,6 +134,7 @@ void AppOpenGL::setup()
 
     torusShape.initData();
     cubeShape.initData();
+    sphereShape.initData();
     viewMat = glm::translate(glm::mat4(1.0), camera);
 }
 
@@ -233,7 +238,7 @@ void AppOpenGL::display()
 
         if (ImGuiWin::draw_sphere)
         {
-            // render sphere
+        	sphereShape.renderFill();
         }
 
         if (ImGuiWin::draw_special)
@@ -265,7 +270,7 @@ void AppOpenGL::display()
 
         if (ImGuiWin::draw_sphere)
         {
-            // render sphere
+        	sphereShape.renderNormals();
         }
 
         if (ImGuiWin::draw_special)
@@ -294,19 +299,22 @@ void AppOpenGL::display()
 
         if (ImGuiWin::draw_sphere)
         {
-            // render sphere
+        	sphereShape.renderWire();
         }
 
         if (ImGuiWin::draw_special)
         {
             torusShape.renderWire();
         }
+
     }
 
     if (ImGuiWin::segments_event_listener)
     {
         torusShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
         cubeShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
+        sphereShape.set(0.05, ImGuiWin::segments_x, ImGuiWin::segments_y, true);
+		sphereShape.initData();
         // update segments sphere, cylinder ...
 
         ImGuiWin::segments_event_listener = false;

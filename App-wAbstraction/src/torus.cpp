@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include <vector>
-#include <GL/glew.h>
+#include <GL\glew.h>
 #include <iostream>
 
 #define PI 3.14
@@ -61,7 +61,7 @@ void Torus::initData()
 
     // build vertices to paint normals
     std::vector<float> lineas_de_normales;
-    float long_linea = 0.02f;
+    float long_linea = 0.024f;
     for (int i = 0; i < normales.size(); i+=3) {
         lineas_de_normales.push_back(vertices[i]);
         lineas_de_normales.push_back(vertices[i+1]);
@@ -124,7 +124,7 @@ void Torus::initData()
 
 }
 
-void Torus::renderFill(){
+void Torus::renderFill() const{
 
     // draw torus fill
 
@@ -137,7 +137,7 @@ void Torus::renderFill(){
     glDisable(GL_PRIMITIVE_RESTART);
 }
 
-void Torus::renderNormals(){
+void Torus::renderNormals() const{
 
     // draw torus normals
 
@@ -145,10 +145,10 @@ void Torus::renderNormals(){
     glDrawArrays(GL_LINES, 0, num_vertices*2);
 }
 
-void Torus::renderWire() {
+void Torus::renderWire() const{
 
     // draw "wire" mode
-
+    
     vao.bind();
     ibo.bind();
 

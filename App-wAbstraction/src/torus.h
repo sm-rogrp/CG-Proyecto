@@ -25,9 +25,9 @@ public:
     Torus(int num_x, int num_y, float Rad, float rad) : Shape(num_x, num_y), R(Rad), r(rad) {}
 
     void initData();
-    void renderFill();
-    void renderNormals();
-    void renderWire();
+    void renderFill() const;
+    void renderNormals() const;
+    void renderWire() const;
 
 };
 

@@ -86,29 +86,17 @@ void Cube::initData()
     vao_wire.addBuffer(vbo_wire, layout_2);
 }
 
-<<<<<<< HEAD
 void Cube::renderFill ()const
-=======
-void Cube::renderFill()
->>>>>>> e5cea100a38e8a45e7d50db9d6736088e808b4d4
 {
     vao_fill.bind();
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-<<<<<<< HEAD
 void Cube::renderWire () const{
-=======
-void Cube::renderWire(){
->>>>>>> e5cea100a38e8a45e7d50db9d6736088e808b4d4
     vao_wire.bind();
     // glDrawArrays(GL_LINE_STRIP, 0, )
 }
 
-<<<<<<< HEAD
 void Cube::renderNormals()const {
-=======
-void Cube::renderNormals(){
->>>>>>> e5cea100a38e8a45e7d50db9d6736088e808b4d4
 
 }
