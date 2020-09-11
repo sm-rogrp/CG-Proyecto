@@ -27,9 +27,15 @@ public:
     Cube(int num_x, int num_y, float side_length): Shape(num_x, num_y), side_len(side_length) {};
 
     void initData();
+<<<<<<< HEAD
     void renderFill() const;
     void renderNormals() const;
     void renderWire() const;
+=======
+    void renderFill();
+    void renderNormals();
+    void renderWire();
+>>>>>>> e5cea100a38e8a45e7d50db9d6736088e808b4d4
 };
 
 #endif
