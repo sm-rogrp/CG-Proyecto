@@ -1,15 +1,16 @@
 #ifndef APP_HPP
 #define APP_HPP
 
-#include "..\imgui\imgui.h"
-#include "..\imgui\imgui_impl_glfw.h"
-#include "..\imgui\imgui_impl_opengl3.h"
+#include "..\imgui/imgui.h"
+#include "..\imgui/imgui_impl_glfw.h"
+#include "..\imgui/imgui_impl_opengl3.h"
 
-#include <GL\glew.h>
-#include <GLFW\glfw3.h>
-#include <glm\glm.hpp>
-#include <glm\gtc\type_ptr.hpp>
-#include <glm\gtc\matrix_transform.hpp>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <string>
 #include <iostream>
@@ -22,9 +23,13 @@
 #include "controls.hpp"
 #include "imgui_win.hpp"
 
-#include "torus.h"
 #include "shader.h"
 #include "utils.h"
+#include "torus.h"
+#include "cube.h"
+#include "sphere.h"
+
+
 
 class AppOpenGL{
 private:
@@ -44,24 +49,27 @@ public:
     glm::vec3 camera;
 	Shader sp { "src/vertShader.glsl", "src/fragShader.glsl" };
     Torus torusShape{10, 10, 0.2, 0.05};
+    Cube cubeShape{5, 5, 0.4};
+    Sphere sphereShape{0.05, 10, 10, true};
+
 private:
-        /* Ligthing */
+    	/* Ligthing */
     void installLights(glm::mat4 vMatrix);
     GLuint globalAmbLoc, ambLoc, diffLoc, specLoc, posLoc, mAmbLoc, mDiffLoc, mSpecLoc, mShiLoc;
     glm::mat4 invTrMat, rMat;
     glm::vec3 currentLightPos, lightPosV; // light position as Vector3f, in both model and view space
-    float lightPos[3]; // light position as float array
+    float lightPos[3];                    // light position as float array
     // initial light location
     glm::vec3 initialLightLoc = glm::vec3(5.0f, 2.0f, 2.0f);
     // white light properties
-    float globalAmbient[4] = { 0.7f, 0.7f, 0.7f, 1.0f };
-    float lightAmbient[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    float lightDiffuse[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    float lightSpecular[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float globalAmbient[4] = {0.7f, 0.7f, 0.7f, 1.0f};
+    float lightAmbient[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float lightDiffuse[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float lightSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     // gold material properties
-    float* matAmb = Utils::goldAmbient();
-    float* matDif = Utils::goldDiffuse();
-    float* matSpe = Utils::goldSpecular();
+    float *matAmb = Utils::goldAmbient();
+    float *matDif = Utils::goldDiffuse();
+    float *matSpe = Utils::goldSpecular();
     float matShi = Utils::goldShininess();
     float toRadians(float degrees) { return (degrees * 2.0f * 3.14159f) / 360.0f; }
     float amt = 0.0f;
@@ -69,8 +77,8 @@ private:
 
 void AppOpenGL::init() {
 
-    width = 800;
-    heigth = 800;
+    width = 600;
+    heigth = 600;
     camera = glm::vec3(0,0,-0.6);
 
     // glfw init
@@ -79,7 +87,7 @@ void AppOpenGL::init() {
         std::cout<<"GLFW Error"<<std::endl;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -114,7 +122,8 @@ void AppOpenGL::init() {
 
 }
 
-void AppOpenGL::setup() {
+void AppOpenGL::setup()
+{
     sp.compile();
     sp.bind();
 
@@ -124,12 +133,14 @@ void AppOpenGL::setup() {
     sp.setUniform2f("u_resolution", (float)width, (float)heigth);
 
     torusShape.initData();
+    cubeShape.initData();
+    sphereShape.initData();
     viewMat = glm::translate(glm::mat4(1.0), camera);
 }
 
 void AppOpenGL::installLights(glm::mat4 vMatrix)
 {
-    // convert light’s position to view space, and save it in a float array
+    // convert lightï¿½s position to view space, and save it in a float array
     lightPosV = glm::vec3(vMatrix * glm::vec4(currentLightPos, 1.0));
     lightPos[0] = lightPosV.x;
     lightPos[1] = lightPosV.y;
@@ -156,7 +167,8 @@ void AppOpenGL::installLights(glm::mat4 vMatrix)
     glProgramUniform1f(sp.getID(), mShiLoc, matShi);
 }
 
-void AppOpenGL::display(){
+void AppOpenGL::display()
+{
 
     sp.bind();
     modelviewMat = viewMat;
@@ -167,8 +179,8 @@ void AppOpenGL::display(){
     // -- ligthing --
     currentLightPos = glm::vec3(initialLightLoc.x, initialLightLoc.y, initialLightLoc.z);
     amt += 0.05f; // movimiento de la luz
-	rMat = glm::rotate(glm::mat4(1.0f), toRadians(amt), glm::vec3(0.0f, 0.0f, 1.0f));
-    currentLightPos =  glm::vec3(rMat * glm::vec4(currentLightPos, 1.0f));
+    rMat = glm::rotate(glm::mat4(1.0f), toRadians(amt), glm::vec3(0.0f, 0.0f, 1.0f));
+    currentLightPos = glm::vec3(rMat * glm::vec4(currentLightPos, 1.0f));
     invTrMat = glm::transpose(glm::inverse(modelviewMat));
     sp.setUniformMat4fv("norm_matrix", invTrMat);
     installLights(viewMat);
@@ -181,10 +193,10 @@ void AppOpenGL::display(){
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+    // glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2.5); // "ancho" de lineas
 
@@ -196,34 +208,115 @@ void AppOpenGL::display(){
 
     sp.setUniform3fv("u_color", color);
 
-    if (ImGuiWin::show_smooth){
+    // controller imgui window
+
+    if (ImGuiWin::show_smooth)
+    {
         sp.setUniform1i("show_smooth", 1);
-    } else {
+    }
+    else
+    {
         sp.setUniform1i("show_smooth", 0);
     }
 
-    if (ImGuiWin::show_fill){
-        torusShape.renderFill();
+    if (ImGuiWin::show_fill)
+    {
+        if (ImGuiWin::draw_cube)
+        {
+            cubeShape.renderFill();
+        }
+
+        if (ImGuiWin::draw_cylinder)
+        {
+            // render cylindre
+        }
+
+        if (ImGuiWin::draw_cone)
+        {
+            // render cone
+        }
+
+        if (ImGuiWin::draw_sphere)
+        {
+        	sphereShape.renderFill();
+        }
+
+        if (ImGuiWin::draw_special)
+        {
+
+            torusShape.renderFill();
+        }
     }
 
-    if (ImGuiWin::show_normals){
+    if (ImGuiWin::show_normals)
+    {
+        sp.setUniform1i("show_smooth", 0);               // disable smooth
+        sp.setUniform3fv("u_color", glm::vec3(1, 0, 0)); // red - color para las lineas normales
 
-        sp.setUniform1i("show_smooth", 0);
-        sp.setUniform3fv("u_color", glm::vec3(1,0,0)); // color rojo
-        torusShape.renderNormals();
-        //glDisable(GL_LINE_SMOOTH);
+        if (ImGuiWin::draw_cube)
+        {
+            cubeShape.renderNormals();
+        }
+
+        if (ImGuiWin::draw_cylinder)
+        {
+            // render cylindre
+        }
+
+        if (ImGuiWin::draw_cone)
+        {
+            // render cone
+        }
+
+        if (ImGuiWin::draw_sphere)
+        {
+        	sphereShape.renderNormals();
+        }
+
+        if (ImGuiWin::draw_special)
+        {
+            torusShape.renderNormals();
+        }
     }
 
-    if (ImGuiWin::show_wire){
-        sp.setUniform1i("show_smooth", 0);
-        sp.setUniform3fv("u_color", glm::vec3(1,1,0)); // color amarillo
-        torusShape.renderWire();
+    if (ImGuiWin::show_wire)
+    {
+        sp.setUniform1i("show_smooth", 0);               // disable smooth
+        sp.setUniform3fv("u_color", glm::vec3(1, 1, 0)); // color amarillo
+
+        if (ImGuiWin::draw_cube)
+            cubeShape.renderWire();
+
+        if (ImGuiWin::draw_cylinder)
+        {
+            // render cylindre
+        }
+
+        if (ImGuiWin::draw_cone)
+        {
+            // render cone
+        }
+
+        if (ImGuiWin::draw_sphere)
+        {
+        	sphereShape.renderWire();
+        }
+
+        if (ImGuiWin::draw_special)
+        {
+            torusShape.renderWire();
+        }
+
     }
 
-    if (ImGuiWin::segments_event_listener){
-        torusShape.num_x = ImGuiWin::segments_x;
-        torusShape.num_y = ImGuiWin::segments_y;
-        torusShape.initData();
+    if (ImGuiWin::segments_event_listener)
+    {
+        torusShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
+        cubeShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
+        sphereShape.set(0.05, ImGuiWin::segments_x, ImGuiWin::segments_y, true);
+		sphereShape.initData();
+        // update segments sphere, cylinder ...
+
         ImGuiWin::segments_event_listener = false;
     }
 
@@ -232,7 +325,6 @@ void AppOpenGL::display(){
 
     glfwPollEvents();
     glfwSwapBuffers(window);
-
 }
 
 void AppOpenGL::cleanAll() {
