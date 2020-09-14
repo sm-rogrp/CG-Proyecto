@@ -6,17 +6,9 @@
 #include <cmath>
 #include <glm\glm.hpp>
 
-
-
-// constants //////////////////////////////////////////////////////////////////
 const int MIN_SECTOR_COUNT = 3;
 const int MIN_STACK_COUNT  = 2;
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// ctor
-///////////////////////////////////////////////////////////////////////////////
 Sphere::Sphere(float radius, int sectors, int stacks, bool smooth) {
     this->radius = radius;
     this->sectorCount = sectors;
@@ -28,10 +20,6 @@ Sphere::Sphere(float radius, int sectors, int stacks, bool smooth) {
     this->smooth = smooth;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-// setters
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::set(float radius, int sectors, int stacks, bool smooth) {
     this->radius = radius;
     this->sectorCount = sectors;
@@ -44,54 +32,6 @@ void Sphere::set(float radius, int sectors, int stacks, bool smooth) {
     initData();
 }
 
-void Sphere::setRadius(float radius) {
-    if(radius != this->radius)
-        set(radius, sectorCount, stackCount, smooth);
-}
-
-void Sphere::setSectorCount(int sectors) {
-    if(sectors != this->sectorCount)
-        set(radius, sectors, stackCount, smooth);
-}
-
-void Sphere::setStackCount(int stacks) {
-    if(stacks != this->stackCount)
-        set(radius, sectorCount, stacks, smooth);
-}
-
-void Sphere::setSmooth(bool smooth) {
-    if(this->smooth == smooth)
-        return;
-
-    this->smooth = smooth;
-    if(smooth)
-        initData();
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// print itself
-///////////////////////////////////////////////////////////////////////////////
-void Sphere::printSelf() const {
-    std::cout << "===== Sphere =====\n"
-              << "        Radius: " << radius << "\n"
-              << "  Sector Count: " << sectorCount << "\n"
-              << "   Stack Count: " << stackCount << "\n"
-              << "Smooth Shading: " << (smooth ? "true" : "false") << "\n"
-              << "Triangle Count: " << getTriangleCount() << "\n"
-              << "   Index Count: " << getIndexCount() << "\n"
-              << "  Vertex Count: " << getVertexCount() << "\n"
-              << "  Normal Count: " << getNormalCount() << "\n"
-              << "TexCoord Count: " << getTexCoordCount() << std::endl;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// draw a sphere in VertexArray mode
-// OpenGL RC must be set before calling it
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::renderFill() const {
     glBindVertexArray(vao);
 
@@ -108,12 +48,6 @@ void Sphere::renderFill() const {
     glDrawElements(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// draw lines only
-// the caller must set the line width before call this
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::renderWire() const {
     
     glBindVertexArray(vao);
@@ -140,9 +74,6 @@ void Sphere::renderNormals() const {
     glDrawArrays(GL_LINES, 0, (unsigned int)norm_lines.size() / 3);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// dealloc vectors
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::clearArrays() {
     std::vector<float>().swap(vertices);
     std::vector<float>().swap(normals);
@@ -152,17 +83,14 @@ void Sphere::clearArrays() {
     std::vector<unsigned int>().swap(lineIndices);
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// build vertices of sphere with smooth shading using parametric equation
-// x = r * cos(u) * cos(v)
-// y = r * cos(u) * sin(v)
-// z = r * sin(u)
-// where u: stack(latitude) angle (-90 <= u <= 90)
-//       v: sector(longitude) angle (0 <= v <= 360)
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::initData() {
+
+    // x = r * cos(u) * cos(v)
+    // y = r * cos(u) * sin(v)
+    // z = r * sin(u)
+    // where u: stack(latitude) angle (-90 <= u <= 90)
+    //       v: sector(longitude) angle (0 <= v <= 360)
+    
     const float PI = acos(-1);
 
     // clear memory of prev arrays
@@ -270,7 +198,6 @@ void Sphere::initData() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi_lines);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, lineIndices.size() * sizeof(unsigned int), &lineIndices[0], GL_STATIC_DRAW);
 
-
     glGenVertexArrays(1, &vao_2);
     glBindVertexArray(vao_2);
 
@@ -279,12 +206,6 @@ void Sphere::initData() {
     glBufferData(GL_ARRAY_BUFFER, norm_lines.size() * sizeof(float), &norm_lines[0], GL_STATIC_DRAW);
 }
 
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// add single vertex to array
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::addVertex(float x, float y, float z)
 {
     vertices.push_back(x);
@@ -292,11 +213,6 @@ void Sphere::addVertex(float x, float y, float z)
     vertices.push_back(z);
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// add single normal to array
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::addNormal(float nx, float ny, float nz)
 {
     normals.push_back(nx);
@@ -304,67 +220,15 @@ void Sphere::addNormal(float nx, float ny, float nz)
     normals.push_back(nz);
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// add single texture coord to array
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::addTexCoord(float s, float t)
 {
     texCoords.push_back(s);
     texCoords.push_back(t);
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// add 3 indices to array
-///////////////////////////////////////////////////////////////////////////////
 void Sphere::addIndices(unsigned int i1, unsigned int i2, unsigned int i3)
 {
     indices.push_back(i1);
     indices.push_back(i2);
     indices.push_back(i3);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// return face normal of a triangle v1-v2-v3
-// if a triangle has no surface (normal length = 0), then return a zero vector
-///////////////////////////////////////////////////////////////////////////////
-std::vector<float> Sphere::computeFaceNormal(float x1, float y1, float z1,  // v1
-                                             float x2, float y2, float z2,  // v2
-                                             float x3, float y3, float z3)  // v3
-{
-    const float EPSILON = 0.000001f;
-
-    std::vector<float> normal(3, 0.0f);     // default return value (0,0,0)
-    float nx, ny, nz;
-
-    // find 2 edge vectors: v1-v2, v1-v3
-    float ex1 = x2 - x1;
-    float ey1 = y2 - y1;
-    float ez1 = z2 - z1;
-    float ex2 = x3 - x1;
-    float ey2 = y3 - y1;
-    float ez2 = z3 - z1;
-
-    // cross product: e1 x e2
-    nx = ey1 * ez2 - ez1 * ey2;
-    ny = ez1 * ex2 - ex1 * ez2;
-    nz = ex1 * ey2 - ey1 * ex2;
-
-    // normalize only if the length is > 0
-    float length = sqrtf(nx * nx + ny * ny + nz * nz);
-    if(length > EPSILON)
-    {
-        // normalize
-        float lengthInv = 1.0f / length;
-        normal[0] = nx * lengthInv;
-        normal[1] = ny * lengthInv;
-        normal[2] = nz * lengthInv;
-    }
-
-    return normal;
 }

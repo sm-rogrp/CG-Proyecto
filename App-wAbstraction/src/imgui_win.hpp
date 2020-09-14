@@ -1,20 +1,21 @@
 #ifndef IMGUIWIN_HPP
 #define IMGUIWIN_HPP
 
-#include "..\imgui/imgui.h"
-#include "..\imgui/imgui_impl_glfw.h"
-#include "..\imgui/imgui_impl_opengl3.h"
+#include "imgui\imgui.h"
+#include "imgui\imgui_impl_glfw.h"
+#include "imgui\imgui_impl_opengl3.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
+#include <GL\glew.h>
+#include <GLFW\glfw3.h>
+#include <glm\glm.hpp>
+#include <glm\gtc\type_ptr.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 
 namespace ImGuiWin
 {
+    enum SHAPE {CUBE = 0, CYLINDER = 1, CONE = 2, SPHERE = 3, SPECIAL = 4};
+    void optFigure(std::string title, SHAPE shp);
+
     const int MAX_SEGMENTS = 60;
     const int MIN_SEGMENTS = 3;
 
@@ -35,6 +36,8 @@ namespace ImGuiWin
     int segments_x = 10;
     int segments_y = 10;
     bool segments_event_listener = false;
+
+    float varRad[5];
 
     void renderMainWindow()
     {
@@ -75,7 +78,21 @@ namespace ImGuiWin
                 if (ImGui::SliderInt("X", &segments_x, MIN_SEGMENTS, MAX_SEGMENTS)) { segments_event_listener = true; }
                 if (ImGui::SliderInt("Y", &segments_y, MIN_SEGMENTS, MAX_SEGMENTS)) { segments_event_listener = true; }
             ImGui::Unindent();
+        ImGui::End();
 
+        if (draw_cube) optFigure("cube", SHAPE::CUBE);
+        if (draw_cylinder) optFigure("cylinder", SHAPE::CYLINDER);
+        if (draw_cone) optFigure("cone", SHAPE::CONE);
+        if (draw_sphere) optFigure("sphere", SHAPE::SPHERE);
+        if (draw_special) optFigure("special", SHAPE::SPECIAL);
+    }
+
+    // muestra opciones adicionales para el renderizado de la figura
+    void optFigure(std::string title, SHAPE shp){
+        float *varRadio;
+        varRadio = &varRad[shp];
+        ImGui::Begin(title.c_str());
+        if (ImGui::SliderFloat("Radio", varRadio, 0.01, 0.9)) { segments_event_listener = true; }
         ImGui::End();
     }
 

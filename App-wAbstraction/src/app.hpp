@@ -1,9 +1,9 @@
 #ifndef APP_HPP
 #define APP_HPP
 
-#include "..\imgui/imgui.h"
-#include "..\imgui/imgui_impl_glfw.h"
-#include "..\imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -25,11 +25,12 @@
 
 #include "shader.h"
 #include "utils.h"
+
 #include "torus.h"
+#include "shader.h"
 #include "cube.h"
 #include "sphere.h"
-
-
+#include "cylinder.h"
 
 class AppOpenGL{
 private:
@@ -48,9 +49,14 @@ public:
     int width, heigth;
     glm::vec3 camera;
 	Shader sp { "src/vertShader.glsl", "src/fragShader.glsl" };
+
+    /*  -- [SHAPES] -- */
     Torus torusShape{10, 10, 0.2, 0.05};
     Cube cubeShape{5, 5, 0.4};
     Sphere sphereShape{0.05, 10, 10, true};
+    Cylinder cylinderShape{0.3, 0.3, 0.5, 30, 30, true};
+    Cylinder coneShape{0, 0.3, 0.5, 30, 30, true};
+    /*  -- [SHAPES] -- */
 
 private:
     	/* Ligthing */
@@ -87,7 +93,7 @@ void AppOpenGL::init() {
         std::cout<<"GLFW Error"<<std::endl;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -132,9 +138,17 @@ void AppOpenGL::setup()
     sp.setUniformMat4fv("proj_matrix", projMat);
     sp.setUniform2f("u_resolution", (float)width, (float)heigth);
 
+
+    /*  -- [SHAPES] -- */
+    // --- setup data for shapes ---
     torusShape.initData();
     cubeShape.initData();
     sphereShape.initData();
+    cylinderShape.initData();
+    coneShape.initData();
+    /*  -- [SHAPES] -- */
+
+
     viewMat = glm::translate(glm::mat4(1.0), camera);
 }
 
@@ -208,123 +222,125 @@ void AppOpenGL::display()
 
     sp.setUniform3fv("u_color", color);
 
-    // controller imgui window
+    /*  -- [SHAPES] -- */
+        //      CONTROLADOR
 
-    if (ImGuiWin::show_smooth)
-    {
-        sp.setUniform1i("show_smooth", 1);
-    }
-    else
-    {
-        sp.setUniform1i("show_smooth", 0);
-    }
-
-    if (ImGuiWin::show_fill)
-    {
-        if (ImGuiWin::draw_cube)
+        if (ImGuiWin::show_smooth)
         {
-            cubeShape.renderFill();
+            sp.setUniform1i("show_smooth", 1);
+        }
+        else
+        {
+            sp.setUniform1i("show_smooth", 0);
         }
 
-        if (ImGuiWin::draw_cylinder)
+        if (ImGuiWin::show_fill)
         {
-            // render cylindre
+            if (ImGuiWin::draw_cube)
+            {
+                cubeShape.renderFill();
+            }
+
+            if (ImGuiWin::draw_cylinder)
+            {
+                cylinderShape.renderFill();
+            }
+
+            if (ImGuiWin::draw_cone)
+            {
+                coneShape.renderFill();
+            }
+
+            if (ImGuiWin::draw_sphere)
+            {
+                sphereShape.renderFill();
+            }
+
+            if (ImGuiWin::draw_special)
+            {
+
+                torusShape.renderFill();
+            }
         }
 
-        if (ImGuiWin::draw_cone)
+        if (ImGuiWin::show_normals)
         {
-            // render cone
+            sp.setUniform1i("show_smooth", 0);               // disable smooth
+            sp.setUniform3fv("u_color", glm::vec3(1, 0, 0)); // red - color para las lineas normales
+
+            if (ImGuiWin::draw_cube)
+            {
+                cubeShape.renderNormals();
+            }
+
+            if (ImGuiWin::draw_cylinder)
+            {
+                cylinderShape.renderNormals();
+            }
+
+            if (ImGuiWin::draw_cone)
+            {
+                coneShape.renderNormals();
+            }
+
+            if (ImGuiWin::draw_sphere)
+            {
+                sphereShape.renderNormals();
+            }
+
+            if (ImGuiWin::draw_special)
+            {
+                torusShape.renderNormals();
+            }
         }
 
-        if (ImGuiWin::draw_sphere)
+        if (ImGuiWin::show_wire)
         {
-        	sphereShape.renderFill();
+            sp.setUniform1i("show_smooth", 0);               // disable smooth
+            sp.setUniform3fv("u_color", glm::vec3(1, 1, 0)); // color amarillo
+
+            if (ImGuiWin::draw_cube)
+                cubeShape.renderWire();
+
+            if (ImGuiWin::draw_cylinder)
+            {
+                cylinderShape.renderWire();
+            }
+
+            if (ImGuiWin::draw_cone)
+            {
+                coneShape.renderWire();
+            }
+
+            if (ImGuiWin::draw_sphere)
+            {
+                sphereShape.renderWire();
+            }
+
+            if (ImGuiWin::draw_special)
+            {
+                torusShape.renderWire();
+            }
         }
 
-        if (ImGuiWin::draw_special)
+        if (ImGuiWin::segments_event_listener)
         {
-
-            torusShape.renderFill();
-        }
-    }
-
-    if (ImGuiWin::show_normals)
-    {
-        sp.setUniform1i("show_smooth", 0);               // disable smooth
-        sp.setUniform3fv("u_color", glm::vec3(1, 0, 0)); // red - color para las lineas normales
-
-        if (ImGuiWin::draw_cube)
-        {
-            cubeShape.renderNormals();
+            torusShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
+            cubeShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
+            sphereShape.set(ImGuiWin::varRad[ImGuiWin::SHAPE::SPHERE], ImGuiWin::segments_x, ImGuiWin::segments_y, true);
+            sphereShape.initData();
+            cylinderShape.set(0.2, 0.3, 0.5, ImGuiWin::segments_x, ImGuiWin::segments_y , true);
+            cylinderShape.initData();
+            coneShape.set(0, 0.3, 0.5, ImGuiWin::segments_x, ImGuiWin::segments_y, true);
+            coneShape.initData();
+            ImGuiWin::segments_event_listener = false;
         }
 
-        if (ImGuiWin::draw_cylinder)
-        {
-            // render cylindre
-        }
+        ImGuiWin::renderMainWindow();
+        ImGuiWin::endMainWindow();
 
-        if (ImGuiWin::draw_cone)
-        {
-            // render cone
-        }
-
-        if (ImGuiWin::draw_sphere)
-        {
-        	sphereShape.renderNormals();
-        }
-
-        if (ImGuiWin::draw_special)
-        {
-            torusShape.renderNormals();
-        }
-    }
-
-    if (ImGuiWin::show_wire)
-    {
-        sp.setUniform1i("show_smooth", 0);               // disable smooth
-        sp.setUniform3fv("u_color", glm::vec3(1, 1, 0)); // color amarillo
-
-        if (ImGuiWin::draw_cube)
-            cubeShape.renderWire();
-
-        if (ImGuiWin::draw_cylinder)
-        {
-            // render cylindre
-        }
-
-        if (ImGuiWin::draw_cone)
-        {
-            // render cone
-        }
-
-        if (ImGuiWin::draw_sphere)
-        {
-        	sphereShape.renderWire();
-        }
-
-        if (ImGuiWin::draw_special)
-        {
-            torusShape.renderWire();
-        }
-
-    }
-
-    if (ImGuiWin::segments_event_listener)
-    {
-        torusShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
-        cubeShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
-        sphereShape.set(0.05, ImGuiWin::segments_x, ImGuiWin::segments_y, true);
-		sphereShape.initData();
-        // update segments sphere, cylinder ...
-
-        ImGuiWin::segments_event_listener = false;
-    }
-
-    ImGuiWin::renderMainWindow();
-    ImGuiWin::endMainWindow();
-
-    glfwPollEvents();
-    glfwSwapBuffers(window);
+        glfwPollEvents();
+        glfwSwapBuffers(window);
 }
 
 void AppOpenGL::cleanAll() {
