@@ -28,7 +28,7 @@
 
 #include "torus.h"
 #include "shader.h"
-#include "cube.h"
+#include "cubesphere.h"
 #include "sphere.h"
 #include "cylinder.h"
 
@@ -52,10 +52,11 @@ public:
 
     /*  -- [SHAPES] -- */
     Torus torusShape{10, 10, 0.2, 0.05};
-    Cube cubeShape{5, 5, 0.4};
     Sphere sphereShape{0.05, 10, 10, true};
     Cylinder cylinderShape{0.3, 0.3, 0.5, 30, 30, true};
     Cylinder coneShape{0, 0.3, 0.5, 30, 30, true};
+    Cubesphere cubeShape{0.1, 0, true};
+
     /*  -- [SHAPES] -- */
 
 private:
@@ -142,10 +143,11 @@ void AppOpenGL::setup()
     /*  -- [SHAPES] -- */
     // --- setup data for shapes ---
     torusShape.initData();
-    cubeShape.initData();
     sphereShape.initData();
     cylinderShape.initData();
     coneShape.initData();
+    cubeShape.buildVerticesSmooth();
+
     /*  -- [SHAPES] -- */
 
 
@@ -326,7 +328,6 @@ void AppOpenGL::display()
         if (ImGuiWin::segments_event_listener)
         {
             torusShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
-            cubeShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
             sphereShape.set(ImGuiWin::varRad[ImGuiWin::SHAPE::SPHERE], ImGuiWin::segments_x, ImGuiWin::segments_y, true);
             sphereShape.initData();
             cylinderShape.set(0.2, 0.3, 0.5, ImGuiWin::segments_x, ImGuiWin::segments_y , true);
