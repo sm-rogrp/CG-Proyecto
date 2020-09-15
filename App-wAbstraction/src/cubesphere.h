@@ -97,9 +97,6 @@ public:
     std::vector<unsigned int> lineIndices;
     std::vector<float> norm_lines;
 
-
-
-
     unsigned int vbo_vert;
     unsigned int vbo_norm;
     unsigned int vbo_indi;
@@ -111,8 +108,6 @@ public:
     void renderFill() const;                                  // draw surface
     void renderWire() const;     // draw lines only
     void renderNormals() const;
-
-
 
     // interleaved
     std::vector<float> interleavedVertices;

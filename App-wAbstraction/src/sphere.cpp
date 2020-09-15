@@ -67,6 +67,7 @@ void Sphere::renderWire() const {
 
 void Sphere::renderNormals() const {
     glBindVertexArray(vao_2);
+    
     glBindBuffer(GL_ARRAY_BUFFER, vbo_norm_lines);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);

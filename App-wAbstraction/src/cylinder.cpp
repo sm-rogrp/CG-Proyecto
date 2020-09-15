@@ -28,7 +28,6 @@ void Cylinder::set(float baseRadius, float topRadius, float height, int sectors,
     this->smooth = smooth;
 
     // generate unit circle vertices first
-    buildUnitCircleVertices();
 }
 
 void Cylinder::renderFill() const
@@ -87,6 +86,8 @@ void Cylinder::clearArrays()
 
 void Cylinder::initData()
 {
+    buildUnitCircleVertices();
+
     // build vertices of cylinder with smooth shading
     // where v: sector angle (0 <= v <= 360)
 

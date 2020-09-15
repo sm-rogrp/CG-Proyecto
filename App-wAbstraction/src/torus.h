@@ -24,6 +24,11 @@ public:
 
     Torus(int num_x, int num_y, float Rad, float rad) : Shape(num_x, num_y), R(Rad), r(rad) {}
 
+    void setProp(float R, float r){
+        this->R = R;
+        this->r = r;
+    }
+
     void initData();
     void renderFill() const;
     void renderNormals() const;

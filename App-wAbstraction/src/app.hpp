@@ -329,13 +329,41 @@ void AppOpenGL::display()
         if (ImGuiWin::segments_event_listener)
         {
             torusShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
-            sphereShape.set(ImGuiWin::varRad[ImGuiWin::SHAPE::SPHERE], ImGuiWin::segments_x, ImGuiWin::segments_y, true);
-            sphereShape.initData();
-            cylinderShape.set(0.2, 0.3, 0.5, ImGuiWin::segments_x, ImGuiWin::segments_y , true);
+
+            cylinderShape.setSegments(ImGuiWin::segments_x, ImGuiWin::segments_y);
             cylinderShape.initData();
-            coneShape.set(0, 0.3, 0.5, ImGuiWin::segments_x, ImGuiWin::segments_y, true);
+
+            coneShape.setSegments(ImGuiWin::segments_x, ImGuiWin::segments_y);
             coneShape.initData();
+
+            sphereShape.setSegments(ImGuiWin::segments_x, ImGuiWin::segments_y);
+            sphereShape.initData();
+
             ImGuiWin::segments_event_listener = false;
+        }
+
+        if (ImGuiWin::cyl_prop_listener){
+            cylinderShape.setProp(ImGuiWin::cyl_base_rad, ImGuiWin::cyl_top_rad, ImGuiWin::cyl_heigth);
+            cylinderShape.initData();
+            ImGuiWin::cyl_prop_listener = false;
+        }
+
+        if (ImGuiWin::con_prop_listener){
+            coneShape.setProp(0, ImGuiWin::con_top_rad, ImGuiWin::con_heigth);
+            coneShape.initData();
+            ImGuiWin::con_prop_listener = false;
+        }
+
+        if (ImGuiWin::sph_prop_listener){
+            sphereShape.setProp(ImGuiWin::sph_rad);
+            sphereShape.initData();
+            ImGuiWin::sph_prop_listener = false;
+        }
+
+        if (ImGuiWin::tor_prop_listener){
+            torusShape.setProp(ImGuiWin::tor_R, ImGuiWin::tor_r);
+            torusShape.initData();
+            ImGuiWin::sph_prop_listener = false;
         }
 
         ImGuiWin::renderMainWindow();

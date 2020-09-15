@@ -26,16 +26,7 @@ public:
     void addIndices(unsigned int i1, unsigned int i2, unsigned int i3);
     std::vector<float> getSideNormals(); 
 
-    // miembros
-
-    float baseRadius;
-    float topRadius;
-    float height;
-    int sectorCount;                        // # of slices
-    int stackCount;                         // # of stacks
-    unsigned int baseIndex;                 // starting index of base
-    unsigned int topIndex;                  // starting index of top
-    bool smooth;
+    // ----------------------------------
 
     std::vector<float> unitCircleVertices;
     std::vector<float> vertices;
@@ -52,6 +43,26 @@ public:
     unsigned int vbo_indi;
     unsigned int vbo_lines_indi;
     unsigned int vbo_lines_norm;
+
+    float baseRadius;
+    float topRadius;
+    float height;
+    int sectorCount;                        // # of slices
+    int stackCount;                         // # of stacks
+    unsigned int baseIndex;                 // starting index of base
+    unsigned int topIndex;                  // starting index of top
+    bool smooth;
+    
+    void setSegments(int sectorCount, int stackCount) {
+        this->sectorCount = sectorCount;
+        this->stackCount = stackCount;
+    }
+    
+    void setProp(float baseRadius, float topRadius, float height){
+        this->baseRadius = baseRadius;
+        this->topRadius = topRadius;
+        this->height = height;
+    }
 
 };
 

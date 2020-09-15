@@ -1,11 +1,11 @@
 #ifndef CONTROLS_HPP
 #define CONTROLS_HPP
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <GL\glew.h>
+#include <GLFW\glfw3.h>
+#include <glm\glm.hpp>
+#include <glm\gtc\type_ptr.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 
 #include <string>
 #include <iostream>
@@ -35,7 +35,8 @@ namespace Controls
     void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
     void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
     void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
-    void window_size_callback(GLFWwindow* window, int newWidth, int newHeight);
+    void window_size_callback(GLFWwindow* win, int newWidth, int newHeight);
+
 }; // namespace Controls
 
 glm::mat4 Controls::getTransf()
@@ -43,10 +44,10 @@ glm::mat4 Controls::getTransf()
     return transf;
 }
 
-void Controls::window_size_callback(GLFWwindow* window, int newWidth, int newHeight) {
-	aspect = (float)newWidth / (float)newHeight;
-	glViewport(0, 0, newWidth, newHeight);
-	pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
+void Controls::window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
+        aspect = (float)newWidth / (float)newHeight;
+        glViewport(0, 0, newWidth, newHeight);
+        pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 }
 
 void Controls::cursor_position_callback(GLFWwindow *window, double xpos, double ypos)

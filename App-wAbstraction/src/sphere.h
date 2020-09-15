@@ -10,6 +10,16 @@ public:
     Sphere(float radius, int sectors, int stacks, bool smooth);
     ~Sphere() {}
 
+    void setSegments(int sectors, int stacks){
+            this->sectorCount = sectors;
+            this->stackCount = stacks;
+    }
+
+    void setProp(float rad){
+        this->radius = rad;
+    }
+
+
     // getters/setters
     float getRadius() const                 { return radius; }
     int getSectorCount() const              { return sectorCount; }
