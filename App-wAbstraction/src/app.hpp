@@ -52,11 +52,10 @@ public:
 
     /*  -- [SHAPES] -- */
     Torus torusShape{10, 10, 0.2, 0.05};
-    Sphere sphereShape{0.05, 10, 10, true};
-    Cylinder cylinderShape{0.3, 0.3, 0.5, 30, 30, true};
-    Cylinder coneShape{0, 0.3, 0.5, 30, 30, true};
+    Sphere sphereShape{0.1, 10, 10, true};
+    Cylinder cylinderShape{0.1, 0.1, 0.15, 30, 30, true};
+    Cylinder coneShape{0, 0.1, 0.15, 30, 30, true};
     Cubesphere cubeShape{0.1, 0, true};
-
     /*  -- [SHAPES] -- */
 
 private:
@@ -118,6 +117,7 @@ void AppOpenGL::init() {
     glfwSetMouseButtonCallback(window, Controls::mouse_button_callback);
     glfwSetScrollCallback(window, Controls::scroll_callback);
     glfwSetKeyCallback(window, Controls::key_callback);
+    glfwSetWindowSizeCallback(window, Controls::window_size_callback);
 
     // imgui init
     ImGui::CreateContext();
@@ -134,11 +134,11 @@ void AppOpenGL::setup()
     sp.compile();
     sp.bind();
 
-    projMat = glm::perspective(1.0472f, (float)width / (float)heigth, 0.1f, 1000.0f);
-
+    int w, h;
+    glfwGetWindowSize(window, &w, &h);
+    projMat = glm::perspective(1.0472f, (float)w / (float)h, 0.1f, 1000.0f);
     sp.setUniformMat4fv("proj_matrix", projMat);
     sp.setUniform2f("u_resolution", (float)width, (float)heigth);
-
 
     /*  -- [SHAPES] -- */
     // --- setup data for shapes ---
@@ -191,6 +191,7 @@ void AppOpenGL::display()
     modelviewMat *= Controls::getTransf();
 
     sp.setUniformMat4fv("mv_matrix", modelviewMat);
+    sp.setUniformMat4fv("proj_matrix", Controls::pMat);
 
     // -- ligthing --
     currentLightPos = glm::vec3(initialLightLoc.x, initialLightLoc.y, initialLightLoc.z);

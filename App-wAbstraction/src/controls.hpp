@@ -26,18 +26,27 @@ namespace Controls
     double oldX = 0;
     double oldY = 0;
 
+    float aspect;
+    glm::mat4 pMat = glm::mat4(1.0f);
+
     glm::mat4 getTransf();
 
     void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
     void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
     void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
     void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
-
+    void window_size_callback(GLFWwindow* window, int newWidth, int newHeight);
 }; // namespace Controls
 
 glm::mat4 Controls::getTransf()
 {
     return transf;
+}
+
+void Controls::window_size_callback(GLFWwindow* window, int newWidth, int newHeight) {
+	aspect = (float)newWidth / (float)newHeight;
+	glViewport(0, 0, newWidth, newHeight);
+	pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 }
 
 void Controls::cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
