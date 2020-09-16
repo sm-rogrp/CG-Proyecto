@@ -225,16 +225,18 @@ void AppOpenGL::display()
 
     sp.setUniform3fv("u_color", color);
 
-    /*  -- [SHAPES] -- */
+        /*  -- [SHAPES] -- */
         //      CONTROLADOR
 
         if (ImGuiWin::show_smooth)
         {
-            sp.setUniform1i("show_smooth", 1);
+            // sp.setUniform1i("show_smooth", 1);
+            sp.setUniform1i("op_shader", ImGuiWin::shader_opt);
+
         }
         else
         {
-            sp.setUniform1i("show_smooth", 0);
+            sp.setUniform1i("op_shader", 0);
         }
 
         if (ImGuiWin::show_fill)
@@ -326,8 +328,18 @@ void AppOpenGL::display()
             }
         }
 
+        // if (ImGuiWin::shader_opt_listener){
+
+        //     sp.setFiles(ImGuiWin::vertexFile, ImGuiWin::fragmentFile);
+        //     sp.compile();
+        //     sp.bind();
+
+        //     ImGuiWin::shader_opt_listener = false;
+        // }
+
         if (ImGuiWin::segments_event_listener)
         {
+
             torusShape.segmentsUpdate(ImGuiWin::segments_x, ImGuiWin::segments_y);
 
             cylinderShape.setSegments(ImGuiWin::segments_x, ImGuiWin::segments_y);
@@ -371,16 +383,18 @@ void AppOpenGL::display()
 
         glfwPollEvents();
         glfwSwapBuffers(window);
-}
+    }
 
-void AppOpenGL::cleanAll() {
-	ImGuiWin::cleanAll();
-	glfwDestroyWindow(window);
-	glfwTerminate();
-}
+    void AppOpenGL::cleanAll()
+    {
+        ImGuiWin::cleanAll();
+        glfwDestroyWindow(window);
+        glfwTerminate();
+    }
 
-bool AppOpenGL::shouldClose() {
-	return glfwWindowShouldClose(window);
-}
+    bool AppOpenGL::shouldClose()
+    {
+        return glfwWindowShouldClose(window);
+    }
 
 #endif

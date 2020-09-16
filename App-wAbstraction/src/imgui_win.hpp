@@ -15,14 +15,20 @@
 
 namespace ImGuiWin
 {
-    enum SHAPE {CUBE = 0, CYLINDER = 1, CONE = 2, SPHERE = 3, SPECIAL = 4};
-    void optFigure(std::string title, SHAPE shp);
+    // enum SHAPE {CUBE = 0, CYLINDER = 1, CONE = 2, SPHERE = 3, SPECIAL = 4};
+    // void optFigure(std::string title, SHAPE shp);
 
     const int MAX_SEGMENTS = 60;
     const int MIN_SEGMENTS = 3;
 
     ImVec4 fondo = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     ImVec4 color_figura = ImVec4(0.2f, 0.85f, 0.2f, 1.00f);
+
+    void optShaders();
+    // boolean shader_opt_listener = false;
+    int shader_opt = 0;
+    // std::string vertexFile = "vertShader.glsl";
+    // std::string fragmentFile = "fragShader.glsl";
     
     bool show_wire = false;
     bool show_smooth = false;
@@ -63,6 +69,8 @@ namespace ImGuiWin
     float tor_R = 0.2;
     float tor_r = 0.05;
     void editPropTorus();
+
+    void startup(LPCSTR lpApplicationName);
 
     float varRad[5];
 
@@ -106,6 +114,21 @@ namespace ImGuiWin
                 if (ImGui::SliderInt("Y", &segments_y, MIN_SEGMENTS, MAX_SEGMENTS)) { segments_event_listener = true; }
             ImGui::Unindent();
 
+            ImGui::TextColored(ImVec4(1,1,0,1), "Run extra programs!");
+            ImGui::Indent();
+            ImGui::Indent();
+                if (ImGui::Button("MANDELBROT SET")){
+                    startup("mandel.exe");
+                }
+                if (ImGui::Button("SHARINGAN")){
+                    startup("sharingan.exe");
+                }
+                if (ImGui::Button("BART SIMPSON")){
+                    startup("bart.exe");
+                }
+            ImGui::Unindent();
+            ImGui::Unindent();
+
         ImGui::End();
 
         // if (draw_cube) optFigure("cube", SHAPE::CUBE);
@@ -113,16 +136,28 @@ namespace ImGuiWin
         if (draw_cone) editPropCone();
         if (draw_sphere) editPropSphere();
         if (draw_special) editPropTorus();
+
+        if (show_smooth) optShaders();
+
+    }
+
+    void optShaders(){
+        ImGui::Begin("Shaders");
+        ImGui::RadioButton("Ordinario", &shader_opt, 0);
+        ImGui::RadioButton("BlinnPhongShaders", &shader_opt, 1);
+        ImGui::RadioButton("GouraudShaders", &shader_opt, 2);
+        ImGui::RadioButton("PhongShaders", &shader_opt, 3);
+        ImGui::End();
     }
 
     // muestra opciones adicionales para el renderizado de la figura
-    void optFigure(std::string title, SHAPE shp){
-        float *varRadio;
-        varRadio = &varRad[shp];
-        ImGui::Begin(title.c_str());
-        if (ImGui::SliderFloat("Radio", varRadio, 0.01, 0.9)) { segments_event_listener = true; } 
-        ImGui::End();
-    }
+    // void optFigure(std::string title, SHAPE shp){
+    //     float *varRadio;
+    //     varRadio = &varRad[shp];
+    //     ImGui::Begin(title.c_str());
+    //     if (ImGui::SliderFloat("Radio", varRadio, 0.01, 0.9)) { segments_event_listener = true; }
+    //     ImGui::End();
+    // }
 
     void editPropCylinder(){
         ImGui::Begin("Cylinder");
@@ -163,6 +198,36 @@ namespace ImGuiWin
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
+    }
+
+    void startup(LPCSTR lpApplicationName)
+    {
+    // additional information
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi;
+
+    // set the size of the structures
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    // start the program up
+    CreateProcessA
+    (
+        lpApplicationName,   // the path
+        NULL,                // Command line
+        NULL,                   // Process handle not inheritable
+        NULL,                   // Thread handle not inheritable
+        FALSE,                  // Set handle inheritance to FALSE
+        CREATE_NEW_CONSOLE,     // Opens file in a separate console
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory
+        &si,            // Pointer to STARTUPINFO structure
+        &pi           // Pointer to PROCESS_INFORMATION structure
+    );
+        // Close process and thread handles.
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
     }
 
 }
