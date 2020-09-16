@@ -53,6 +53,16 @@ public:
     unsigned int topIndex;                  // starting index of top
     bool smooth;
     
+    void createVertexObjects(){
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo_vert);
+        glGenBuffers(1, &vbo_norm);
+        glGenBuffers(1, &vbo_indi);
+        glGenBuffers(1, &vbo_lines_indi);
+        glGenVertexArrays(1, &vao_2);
+        glGenBuffers(1, &vbo_lines_norm);
+    }
+
     void setSegments(int sectorCount, int stackCount) {
         this->sectorCount = sectorCount;
         this->stackCount = stackCount;

@@ -11,417 +11,9 @@ Cubesphere::Cubesphere(float radius, int sub, bool smooth) : radius(radius), sub
     vertexCountPerFace = vertexCountPerRow * vertexCountPerRow;
 }
 
-void Cubesphere::setRadius(float radius)
-{
-    this->radius = radius;
-    updateRadius(); // update vertex positions only
-}
 
-void Cubesphere::setSideLength(float side)
-{
-    float radius = side * sqrt(3.0f) / 2;   // convert side length to radius
-    setRadius(radius);
-}
-
-void Cubesphere::setSubdivision(int iteration)
-{
-    subdivision = iteration;
-    vertexCountPerRow = (unsigned int)pow(2, iteration) + 1;
-    vertexCountPerFace = vertexCountPerRow * vertexCountPerRow;
-
-    // rebuild vertices
-    if(smooth)
-        buildVerticesSmooth();
-    else
-        buildVerticesFlat();
-}
-
-void Cubesphere::setSmooth(bool smooth)
-{
-    if(this->smooth == smooth)
-        return;
-
-    this->smooth = smooth;
-    if(smooth)
-        buildVerticesSmooth();
-    else
-        buildVerticesFlat();
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// print itself
-///////////////////////////////////////////////////////////////////////////////
-void Cubesphere::printSelf() const
-{
-
-    std::cout << "===== Cubesphere =====\n"
-              << "        Radius: " << radius << "\n"
-              << "   Side Length: " << getSideLength() << "\n"
-              << "   Subdivision: " << subdivision << "\n"
-              << "    Smoothness: " << (smooth ? "true" : "false") << "\n"
-              << "Triangle Count: " << getTriangleCount() << "\n"
-              << "   Index Count: " << getIndexCount() << "\n"
-              << "  Vertex Count: " << getVertexCount() << "\n"
-              << "  Normal Count: " << getNormalCount() << "\n"
-              << "TexCoord Count: " << getTexCoordCount() << std::endl;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// draw lines only
-// the caller must set the line width before call this
-///////////////////////////////////////////////////////////////////////////////
-void Cubesphere::drawLines(const float lineColor[4]) const
-{
-    // set line colour
-    glColor4fv(lineColor);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE,   lineColor);
-
-    // draw lines with VA
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, vertices.data());
-
-    glDrawElements(GL_LINES, (unsigned int)lineIndices.size(), GL_UNSIGNED_INT, lineIndices.data());
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_TEXTURE_2D);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// draw a cubesphere surfaces and lines on top of it
-// the caller must set the line width before call this
-///////////////////////////////////////////////////////////////////////////////
-void Cubesphere::drawWithLines(const float lineColor[4]) const
-{
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1.0f, 1.0f);    // move polygon backward
-    this->draw();
-    glDisable(GL_POLYGON_OFFSET_FILL);
-
-    // draw lines with VA
-    drawLines(lineColor);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// draw only a single face
-///////////////////////////////////////////////////////////////////////////////
-void Cubesphere::drawFace(int faceId) const
-{
-    if(faceId < 0 || faceId >= 6) return;
-
-    // interleaved array
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    unsigned int index = faceId * (unsigned int)interleavedVertices.size() / 6;
-    glVertexPointer(3, GL_FLOAT, interleavedStride, &interleavedVertices[index]);
-    glNormalPointer(GL_FLOAT, interleavedStride, &interleavedVertices[index+3]);
-    glTexCoordPointer(2, GL_FLOAT, interleavedStride, &interleavedVertices[index+6]);
-
-    unsigned int indexCount = (unsigned int)indices.size() / 6;
-    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, indices.data());
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-}
-
-
-void Cubesphere::draw() const {}
-///////////////////////////////////////////////////////////////////////////////
-// update vertex positions only
-///////////////////////////////////////////////////////////////////////////////
-void Cubesphere::updateRadius()
-{
-    float scale = computeScaleForLength(&vertices[0], radius);
-
-    std::size_t i, j;
-    std::size_t count = vertices.size();
-    for(i = 0, j = 0; i < count; i += 3, j += 8)
-    {
-        vertices[i]   *= scale;
-        vertices[i+1] *= scale;
-        vertices[i+2] *= scale;
-
-        // for interleaved array
-        interleavedVertices[j]   *= scale;
-        interleavedVertices[j+1] *= scale;
-        interleavedVertices[j+2] *= scale;
-    }
-}
-
-
-
-
-void Cubesphere::renderFill() const {
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_norm);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi);
-
-    glDrawElements(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, 0);
-}
-
-void Cubesphere::renderWire() const {
-    
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_norm);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi_lines);
-    glDrawElements(GL_LINES, (unsigned int)lineIndices.size(), GL_UNSIGNED_INT, 0);
-
-}
-
-void Cubesphere::renderNormals() const {
-
-    glBindVertexArray(vao_2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_norm_lines);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    // std::cout<<":::"<<norm_lines.size()<<std::endl;
-    glDrawArrays(GL_LINES, 0, (unsigned int)norm_lines.size() / 3);
-}
-
-void Cubesphere::clearArrays() {
-    std::vector<float>().swap(vertices);
-    std::vector<float>().swap(normals);
-    std::vector<float>().swap(texCoords);
-    std::vector<float>().swap(norm_lines);
-    std::vector<unsigned int>().swap(indices);
-    std::vector<unsigned int>().swap(lineIndices);
-}
-
-
-
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// generate vertices with flat shading
-// each triangle is independent (no shared vertices)
-///////////////////////////////////////////////////////////////////////////////
-void Cubesphere::buildVerticesFlat()
-{
-    // generate unit-length verties in +X face
-    std::vector<float> unitVertices = Cubesphere::getUnitPositiveX(vertexCountPerRow);
-
-    // clear memory of prev arrays
-    clearArrays();
-
-    unsigned int k = 0, k1, k2, i1, i2; // indices
-    float v1[3], v2[3], v3[3], v4[3];   // tmp vertices
-    float t1[2], t2[2], t3[2], t4[2];   // texture coords
-    float n[3];                         // normal vector
-
-    // +X face
-    for(unsigned int i = 0; i < vertexCountPerRow - 1; ++i)
-    {
-        k1 = i * vertexCountPerRow;              // index at curr row
-        k2 = k1 + vertexCountPerRow;             // index at next row
-
-        // vertical tex coords
-        t1[1] = t3[1] = (float)i / (vertexCountPerRow - 1);
-        t2[1] = t4[1] = (float)(i+1) / (vertexCountPerRow - 1);
-
-        for(unsigned int j = 0; j < vertexCountPerRow - 1; ++j, ++k1, ++k2)
-        {
-            i1 = k1 * 3;
-            i2 = k2 * 3;
-
-            // 4 vertices of a quad
-            // v1--v3
-            // | / |
-            // v2--v4
-            v1[0] = unitVertices[i1];
-            v1[1] = unitVertices[i1+1];
-            v1[2] = unitVertices[i1+2];
-            v2[0] = unitVertices[i2];
-            v2[1] = unitVertices[i2+1];
-            v2[2] = unitVertices[i2+2];
-            v3[0] = unitVertices[i1+3];
-            v3[1] = unitVertices[i1+4];
-            v3[2] = unitVertices[i1+5];
-            v4[0] = unitVertices[i2+3];
-            v4[1] = unitVertices[i2+4];
-            v4[2] = unitVertices[i2+5];
-
-            // compute face nornal
-            Cubesphere::computeFaceNormal(v1, v2, v3, n);
-
-            // resize vertices by sphere radius
-            Cubesphere::scaleVertex(v1, radius);
-            Cubesphere::scaleVertex(v2, radius);
-            Cubesphere::scaleVertex(v3, radius);
-            Cubesphere::scaleVertex(v4, radius);
-
-            // compute horizontal tex coords
-            t1[0] = t2[0] = (float)j / (vertexCountPerRow - 1);
-            t3[0] = t4[0] = (float)(j+1) / (vertexCountPerRow - 1);
-
-            // add 4 vertex attributes
-            addVertices(v1, v2, v3, v4);
-            addNormals(n, n, n, n);
-            addTexCoords(t1, t2, t3, t4);
-
-            // add indices of 2 triangles
-            addIndices(k, k+1, k+2);
-            addIndices(k+2, k+1, k+3);
-
-            // add line indices; top and left
-            lineIndices.push_back(k);       // left
-            lineIndices.push_back(k+1);
-            lineIndices.push_back(k);       // top
-            lineIndices.push_back(k+2);
-
-            k += 4;     // next
-        }
-    }
-
-    // array size and index for building next face
-    unsigned int startIndex;                    // starting index for next face
-    int vertexSize = (int)vertices.size();      // vertex array size of +X face
-    int indexSize = (int)indices.size();        // index array size of +X face
-    int lineIndexSize = (int)lineIndices.size(); // line index size of +X face
-
-    // build -X face by negating x and z values
-    startIndex = vertices.size() / 3;
-    for(int i = 0, j = 0; i < vertexSize; i += 3, j += 2)
-    {
-        addVertex(-vertices[i], vertices[i+1], -vertices[i+2]);
-        addTexCoord(texCoords[j], texCoords[j+1]);
-        addNormal(-normals[i], normals[i+1], -normals[i+2]);
-    }
-    for(int i = 0; i < indexSize; ++i)
-    {
-        indices.push_back(startIndex + indices[i]);
-    }
-    for(int i = 0; i < lineIndexSize; i += 4)
-    {
-        // left and bottom lines
-        lineIndices.push_back(startIndex + i);      // left
-        lineIndices.push_back(startIndex + i + 1);
-        lineIndices.push_back(startIndex + i + 1);  // bottom
-        lineIndices.push_back(startIndex + i + 3);
-    }
-
-    // build +Y face by swapping x=>y, y=>-z, z=>-x
-    startIndex = vertices.size() / 3;
-    for(int i = 0, j = 0; i < vertexSize; i += 3, j += 2)
-    {
-        addVertex(-vertices[i+2], vertices[i], -vertices[i+1]);
-        addTexCoord(texCoords[j], texCoords[j+1]);
-        addNormal(-normals[i+2], normals[i], -normals[i+1]);
-    }
-    for(int i = 0; i < indexSize; ++i)
-    {
-        indices.push_back(startIndex + indices[i]);
-    }
-    for(int i = 0; i < lineIndexSize; ++i)
-    {
-        // top and left lines (same as +X)
-        lineIndices.push_back(startIndex + lineIndices[i]);
-    }
-
-    // build -Y face by swapping x=>-y, y=>z, z=>-x
-    startIndex = vertices.size() / 3;
-    for(int i = 0, j = 0; i < vertexSize; i += 3, j += 2)
-    {
-        addVertex(-vertices[i+2], -vertices[i], vertices[i+1]);
-        addTexCoord(texCoords[j], texCoords[j+1]);
-        addNormal(-normals[i+2], -normals[i], normals[i+1]);
-    }
-    for(int i = 0; i < indexSize; ++i)
-    {
-        indices.push_back(startIndex + indices[i]);
-    }
-    for(int i = 0; i < lineIndexSize; i += 4)
-    {
-        // top and right lines
-        lineIndices.push_back(startIndex + i);      // top
-        lineIndices.push_back(startIndex + i + 2);
-        lineIndices.push_back(startIndex + 2 + i);  // right
-        lineIndices.push_back(startIndex + 3 + i);
-    }
-
-    // build +Z face by swapping x=>z, z=>-x
-    startIndex = vertices.size() / 3;
-    for(int i = 0, j = 0; i < vertexSize; i += 3, j += 2)
-    {
-        addVertex(-vertices[i+2], vertices[i+1], vertices[i]);
-        addTexCoord(texCoords[j], texCoords[j+1]);
-        addNormal(-normals[i+2], normals[i+1], normals[i]);
-    }
-    for(int i = 0; i < indexSize; ++i)
-    {
-        indices.push_back(startIndex + indices[i]);
-    }
-    for(int i = 0; i < lineIndexSize; ++i)
-    {
-        // top and left lines (same as +X)
-        lineIndices.push_back(startIndex + lineIndices[i]);
-    }
-
-    // build -Z face by swapping x=>-z, z=>x
-    startIndex = vertices.size() / 3;
-    for(int i = 0, j = 0; i < vertexSize; i += 3, j += 2)
-    {
-        addVertex(vertices[i+2], vertices[i+1], -vertices[i]);
-        addTexCoord(texCoords[j], texCoords[j+1]);
-        addNormal(normals[i+2], normals[i+1], -normals[i]);
-    }
-    for(int i = 0; i < indexSize; ++i)
-    {
-        indices.push_back(startIndex + indices[i]);
-    }
-    for(int i = 0; i < lineIndexSize; i += 4)
-    {
-        // left and bottom lines
-        lineIndices.push_back(startIndex + i);      // left
-        lineIndices.push_back(startIndex + i + 1);
-        lineIndices.push_back(startIndex + i + 1);  // bottom
-        lineIndices.push_back(startIndex + i + 3);
-    }
-
-    // generate interleaved vertex array as well
-    buildInterleavedVertices();
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// generate vertices with smooth shading
-///////////////////////////////////////////////////////////////////////////////
 void Cubesphere::buildVerticesSmooth()
 {
-
     // generate unit-length verties in +X face
     std::vector<float> unitVertices = Cubesphere::getUnitPositiveX(vertexCountPerRow);
 
@@ -568,9 +160,6 @@ void Cubesphere::buildVerticesSmooth()
         lineIndices.push_back(startIndex + lineIndices[i+1] + 1);
     }
 
-    // generate interleaved vertex array
-    // buildInterleavedVertices();
-
     // build vertices to paint normals
     float long_linea = 0.02f;
     for (int i = 0; i < normals.size(); i+=3) {
@@ -583,74 +172,81 @@ void Cubesphere::buildVerticesSmooth()
         norm_lines.push_back(vertices[i+2] + normals[i+2] * long_linea);
     }
 
-    // for (int i = 0; i < norm_lines.size(); i+=3) {
-    //     std::cout<<norm_lines[i];
-    //     std::cout<<norm_lines[i+1];
-    //     std::cout<<norm_lines[i+2]<<std::endl;
-    // }
-
-
-
-    glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    glGenBuffers(1, &vbo_vert);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vbo_norm);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_norm);
     glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
     
-    glGenBuffers(1, &vbo_indi);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vbo_indi_lines);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi_lines);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, lineIndices.size() * sizeof(unsigned int), &lineIndices[0], GL_STATIC_DRAW);
 
     glGenVertexArrays(1, &vao_2);
     glBindVertexArray(vao_2);
 
-    glGenBuffers(1, &vbo_norm_lines);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_norm_lines);
     glBufferData(GL_ARRAY_BUFFER, norm_lines.size() * sizeof(float), &norm_lines[0], GL_STATIC_DRAW);
-
 }
 
 
+void Cubesphere::renderFill() const {
+    glBindVertexArray(vao);
 
-///////////////////////////////////////////////////////////////////////////////
-// generate interleaved vertices: V/N/T
-// stride must be 32 bytes
-///////////////////////////////////////////////////////////////////////////////
-void Cubesphere::buildInterleavedVertices()
-{
-    std::vector<float>().swap(interleavedVertices);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
 
-    std::size_t i, j;
-    std::size_t count = vertices.size();
-    for(i = 0, j = 0; i < count; i += 3, j += 2)
-    {
-        interleavedVertices.push_back(vertices[i]);
-        interleavedVertices.push_back(vertices[i+1]);
-        interleavedVertices.push_back(vertices[i+2]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_norm);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi);
 
-        interleavedVertices.push_back(normals[i]);
-        interleavedVertices.push_back(normals[i+1]);
-        interleavedVertices.push_back(normals[i+2]);
-
-        interleavedVertices.push_back(texCoords[j]);
-        interleavedVertices.push_back(texCoords[j+1]);
-    }
+    glDrawElements(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void Cubesphere::renderWire() const {
+    
+    glBindVertexArray(vao);
 
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
 
-///////////////////////////////////////////////////////////////////////////////
-// add single vertex to array
-///////////////////////////////////////////////////////////////////////////////
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_norm);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi_lines);
+    glDrawElements(GL_LINES, (unsigned int)lineIndices.size(), GL_UNSIGNED_INT, 0);
+
+}
+
+void Cubesphere::renderNormals() const {
+
+    glBindVertexArray(vao_2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_norm_lines);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+    // std::cout<<":::"<<norm_lines.size()<<std::endl;
+    glDrawArrays(GL_LINES, 0, (unsigned int)norm_lines.size() / 3);
+}
+
+void Cubesphere::clearArrays() {
+    std::vector<float>().swap(vertices);
+    std::vector<float>().swap(normals);
+    std::vector<float>().swap(texCoords);
+    std::vector<float>().swap(norm_lines);
+    std::vector<unsigned int>().swap(indices);
+    std::vector<unsigned int>().swap(lineIndices);
+}
+
 void Cubesphere::addVertex(float x, float y, float z)
 {
     vertices.push_back(x);
@@ -658,11 +254,6 @@ void Cubesphere::addVertex(float x, float y, float z)
     vertices.push_back(z);
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// add 4 vertices of a quad (v1-v2-v3-v4) to array
-///////////////////////////////////////////////////////////////////////////////
 void Cubesphere::addVertices(const float v1[3], const float v2[3], const float v3[3], const float v4[3])
 {
     vertices.insert(vertices.end(), v1, v1 + 3);    // v1
@@ -671,11 +262,6 @@ void Cubesphere::addVertices(const float v1[3], const float v2[3], const float v
     vertices.insert(vertices.end(), v4, v4 + 3);    // v4
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// add single normal to array
-///////////////////////////////////////////////////////////////////////////////
 void Cubesphere::addNormal(float nx, float ny, float nz)
 {
     normals.push_back(nx);
@@ -683,11 +269,6 @@ void Cubesphere::addNormal(float nx, float ny, float nz)
     normals.push_back(nz);
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// add 4 normals of a quad to array
-///////////////////////////////////////////////////////////////////////////////
 void Cubesphere::addNormals(const float n1[3], const float n2[3], const float n3[3], const float n4[3])
 {
     normals.insert(normals.end(), n1, n1 + 3);  // n1
@@ -697,21 +278,12 @@ void Cubesphere::addNormals(const float n1[3], const float n2[3], const float n3
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-// add single texture coord to array
-///////////////////////////////////////////////////////////////////////////////
 void Cubesphere::addTexCoord(float s, float t)
 {
     texCoords.push_back(s);
     texCoords.push_back(t);
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// add 3 texture coords of a quad to array
-///////////////////////////////////////////////////////////////////////////////
 void Cubesphere::addTexCoords(const float t1[2], const float t2[2], const float t3[2], const float t4[2])
 {
     texCoords.insert(texCoords.end(), t1, t1 + 2);  // t1
@@ -721,10 +293,6 @@ void Cubesphere::addTexCoords(const float t1[2], const float t2[2], const float 
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-// add 3 indices to array
-///////////////////////////////////////////////////////////////////////////////
 void Cubesphere::addIndices(unsigned int i1, unsigned int i2, unsigned int i3)
 {
     indices.push_back(i1);
@@ -732,10 +300,6 @@ void Cubesphere::addIndices(unsigned int i1, unsigned int i2, unsigned int i3)
     indices.push_back(i3);
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-// return the ptr to the vertices for the face ID
-///////////////////////////////////////////////////////////////////////////////
 const float* Cubesphere::getVerticesForFace(int faceId) const
 {
     if(faceId >= 0 && faceId <= 5)
@@ -904,8 +468,6 @@ std::vector<float> Cubesphere::getUnitPositiveX(unsigned int pointsPerRow)
     return vertices;
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // rescale vertex length
 ///////////////////////////////////////////////////////////////////////////////
@@ -915,3 +477,14 @@ void Cubesphere::scaleVertex(float v[3], float scale)
     v[1] *= scale;
     v[2] *= scale;
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -226,32 +226,24 @@ void Cylinder::initData()
     TO DO: usar las clases creadas
     */
 
-    glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     
-    glGenBuffers(1, &vbo_vert);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vbo_norm);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_norm);
     glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vbo_indi);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vbo_lines_indi);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_lines_indi);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, lineIndices.size() * sizeof(unsigned int), &lineIndices[0], GL_STATIC_DRAW);
 
-    glGenVertexArrays(1, &vao_2);
     glBindVertexArray(vao_2);
 
-    glGenBuffers(1, &vbo_lines_norm);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_lines_norm);
     glBufferData(GL_ARRAY_BUFFER, norm_lines.size() * sizeof(float), &norm_lines[0], GL_STATIC_DRAW);
-
 }
 
 void Cylinder::buildUnitCircleVertices()

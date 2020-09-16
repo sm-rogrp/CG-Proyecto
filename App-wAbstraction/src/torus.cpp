@@ -101,9 +101,8 @@ void Torus::initData()
     num_indices = indices.size();
 
     // vao for paint normals
-    vao_2.create();
+
     vao_2.bind();
-    VertexBuffer vbo_2;
     vbo_2.allocate(&lineas_de_normales[0], lineas_de_normales.size() * sizeof(float));
     VertexBufferLayout layout_2;
     layout_2.AddFloat(3);
@@ -111,7 +110,6 @@ void Torus::initData()
     vao_2.unbind();
 
     // vao for paint torus (vertices and normals)
-    vao.create();
     vao.bind();
     vbo.allocate(&vert_and_norm[0], vert_and_norm.size() * sizeof(float));
     VertexBufferLayout layout;
@@ -121,7 +119,6 @@ void Torus::initData()
     vao.unbind();
 
     ibo.allocate(&indices[0], indices.size());
-
 }
 
 void Torus::renderFill() const{

@@ -17,10 +17,10 @@ public:
     float R, r;
 
     VertexArray vao;       // dibujar "fill" torus
-    VertexBuffer vbo;      // vertices
-    VertexBuffer vbo_norm; // normales
-    IndexBuffer ibo;       // indices
     VertexArray vao_2;     // dibujar normales de torus
+    VertexBuffer vbo;      // vertices
+    VertexBuffer vbo_2; // normales
+    IndexBuffer ibo;       // indices
 
     Torus(int num_x, int num_y, float Rad, float rad) : Shape(num_x, num_y), R(Rad), r(rad) {}
 
@@ -33,6 +33,14 @@ public:
     void renderFill() const;
     void renderNormals() const;
     void renderWire() const;
+
+    void createVertexObjects(){
+        vao_2.create();
+        vao.create();
+        vbo_2.create();
+        vbo.create();
+        ibo.create();
+    }
 
 };
 

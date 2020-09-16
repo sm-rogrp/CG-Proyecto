@@ -1,6 +1,8 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
+
+#include <GL\glew.h>
 #include "shape.h"
 #include <vector>
 
@@ -71,6 +73,16 @@ public:
     unsigned int vbo_norm_lines;
     unsigned int vao;
     unsigned int vao_2;
+
+    void createVertexObjects(){
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo_vert);
+        glGenBuffers(1, &vbo_norm);
+        glGenBuffers(1, &vbo_indi);
+        glGenBuffers(1, &vbo_indi_lines);
+        glGenVertexArrays(1, &vao_2);
+        glGenBuffers(1, &vbo_norm_lines);
+    }
 
 };
 

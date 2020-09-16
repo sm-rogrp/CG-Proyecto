@@ -1,6 +1,7 @@
 #ifndef GEOMETRY_CUBESPHERE_H
 #define GEOMETRY_CUBESPHERE_H
 
+#include <GL\glew.h>
 #include <vector>
 #include <map>
 #include <cmath>
@@ -14,13 +15,9 @@ public:
 
     // getters/setters
     float getRadius() const                 { return radius; }
-    void setRadius(float radius);
     float getSideLength() const             { return radius * 2 / sqrt(3.0f); }
-    void setSideLength(float side);
     int getSubdivision() const              { return subdivision; }
-    void setSubdivision(int subdivision);
     bool getSmooth() const                  { return smooth; }
-    void setSmooth(bool smooth);
 
     // for vertex data
     unsigned int getVertexCount() const     { return (unsigned int)vertices.size() / 3; }
@@ -57,15 +54,6 @@ public:
     const float* getInterleavedVerticesForFace(int faceId) const;
     const unsigned int* getIndicesForFace(int faceId) const { return indices.data(); }  // always the begining of index array
 
-    // draw in VertexArray mode
-    void draw() const;
-    void drawLines(const float lineColor[4]) const;
-    void drawWithLines(const float lineColor[4]) const;
-    void drawFace(int faceId) const;    // draw only single face, valid ID is 0~5
-
-    // debug
-    void printSelf() const;
-
     // static functions
     static void computeFaceNormal(const float v1[3], const float v2[3], const float v3[3], float normal[3]);
     static float computeScaleForLength(const float v[3], float length);
@@ -75,9 +63,7 @@ public:
     // member functions
     void clearArrays();
     void updateRadius();
-    void buildVerticesFlat();
     void buildVerticesSmooth();
-    void buildInterleavedVertices();
     void addVertex(float x, float y, float z);
     void addVertices(const float v1[3], const float v2[3], const float v3[3], const float v4[3]);
     void addNormal(float nx, float ny, float nz);
@@ -105,8 +91,17 @@ public:
     unsigned int vao;
     unsigned int vao_2;
 
-    void renderFill() const;                                  // draw surface
-    void renderWire() const;     // draw lines only
+    void createVertexObjects(){
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo_vert);
+        glGenBuffers(1, &vbo_norm);
+        glGenBuffers(1, &vbo_indi);
+        glGenBuffers(1, &vbo_indi_lines);
+        glGenBuffers(1, &vbo_norm_lines);
+    }
+
+    void renderFill() const; 
+    void renderWire() const;    
     void renderNormals() const;
 
     // interleaved

@@ -180,29 +180,22 @@ void Sphere::initData() {
         norm_lines.push_back(vertices[i+2] + normals[i+2] * long_linea);
     }
 
-    glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    glGenBuffers(1, &vbo_vert);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_vert);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vbo_norm);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_norm);
     glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
     
-    glGenBuffers(1, &vbo_indi);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vbo_indi_lines);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indi_lines);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, lineIndices.size() * sizeof(unsigned int), &lineIndices[0], GL_STATIC_DRAW);
 
-    glGenVertexArrays(1, &vao_2);
     glBindVertexArray(vao_2);
 
-    glGenBuffers(1, &vbo_norm_lines);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_norm_lines);
     glBufferData(GL_ARRAY_BUFFER, norm_lines.size() * sizeof(float), &norm_lines[0], GL_STATIC_DRAW);
 }

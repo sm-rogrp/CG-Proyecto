@@ -1,7 +1,7 @@
 #ifndef VERTEXBUFFER_H
 #define VERTEXBUFFER_H
 
-#include<GL/glew.h>
+#include<GL\glew.h>
 
 class VertexBuffer
 {
@@ -16,6 +16,7 @@ class VertexBuffer
         void bind() const;
         void unbind() const;
         void destroy();
+        void create();
         inline unsigned int getID() const { return m_RendererID; } 
 };
 
