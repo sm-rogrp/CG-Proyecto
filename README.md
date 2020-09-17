@@ -10,3 +10,8 @@ Aplicación de visualización de figuras en 3D, utilizando OpenGL, GLFW y GLEW.
 
 ## Documentación
 Documentación de proyecto disponible [aquí](https://darkblood202.github.io/CG-Proyecto-doc/).
+
+## Screenshots
+![SS0](https://github.com/r3gor/CG-Proyecto/blob/master/Screenshots/ss.jpg)
+![SS1](https://github.com/r3gor/CG-Proyecto/blob/master/Screenshots/ss1.jpg)
+![SS2](https://github.com/r3gor/CG-Proyecto/blob/master/Screenshots/ss2.jpg)
