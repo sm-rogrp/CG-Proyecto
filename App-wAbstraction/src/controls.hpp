@@ -37,6 +37,8 @@ namespace Controls
     void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
     void window_size_callback(GLFWwindow* win, int newWidth, int newHeight);
 
+    void resetTrans() { transf = glm::mat4(1.0f); } ;
+
 }; // namespace Controls
 
 glm::mat4 Controls::getTransf()

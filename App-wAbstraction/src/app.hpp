@@ -58,6 +58,16 @@ public:
     Cubesphere cubeShape{0.1, 0, true};
     /*  -- [SHAPES] -- */
 
+    std::vector<float> coord_lines {
+        -1,0,0  ,  1,0,0  ,
+        0,-1,0  ,  0,1,0  ,
+        0,0,-1  ,  0,0,1
+    };
+    VertexArray vao_coord_lines;
+    VertexBuffer vbo_coord_lines;
+
+
+
 private:
     	/* Ligthing */
     void installLights(glm::mat4 vMatrix);
@@ -141,6 +151,18 @@ void AppOpenGL::setup()
     sp.setUniform2f("u_resolution", (float)width, (float)heigth);
 
     /*  -- [SHAPES] -- */
+    // --- setup data for coord lines ---
+    vao_coord_lines.create();
+    vao_coord_lines.bind();
+
+    vbo_coord_lines.create();
+    vbo_coord_lines.allocate(&coord_lines[0], sizeof(float) * coord_lines.size());
+
+    VertexBufferLayout layout;
+    layout.AddFloat(3);
+
+    vao_coord_lines.addBuffer(vbo_coord_lines, layout);
+
     // --- setup data for shapes ---
     torusShape.createVertexObjects();
     torusShape.initData();
@@ -193,8 +215,8 @@ void AppOpenGL::installLights(glm::mat4 vMatrix)
 
 void AppOpenGL::display()
 {
-
     sp.bind();
+
     modelviewMat = viewMat;
     modelviewMat *= Controls::getTransf();
 
@@ -203,7 +225,7 @@ void AppOpenGL::display()
 
     // -- ligthing --
     currentLightPos = glm::vec3(initialLightLoc.x, initialLightLoc.y, initialLightLoc.z);
-    amt += 0.05f; // movimiento de la luz
+    amt += ImGuiWin::mov_ligth; // movimiento de la luz
     rMat = glm::rotate(glm::mat4(1.0f), toRadians(amt), glm::vec3(0.0f, 0.0f, 1.0f));
     currentLightPos = glm::vec3(rMat * glm::vec4(currentLightPos, 1.0f));
     invTrMat = glm::transpose(glm::inverse(modelviewMat));
@@ -218,6 +240,27 @@ void AppOpenGL::display()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+
+    /* draw coords lines */
+    if (ImGuiWin::paint_cords_lines){
+        sp.setUniform1i("op_shader", 0); // ordinarie shader
+
+        vao_coord_lines.bind();
+        glPointSize(10.0);
+        sp.setUniform3fv("u_color", glm::vec3(1,0,0)); // Red
+        glDrawArrays(GL_LINES, 0, 2); // Eje X
+
+        sp.setUniform3fv("u_color", glm::vec3(0,1,0)); // Green
+        glDrawArrays(GL_LINES, 2, 2); // Eje Y
+
+        sp.setUniform3fv("u_color", glm::vec3(0,0,1)); // Blue
+        glDrawArrays(GL_LINES, 4, 2); // Eje Z
+
+        sp.setUniform1i("op_shader", ImGuiWin::shader_opt); // active shader
+    }
+
+
     // glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
     glEnable(GL_DEPTH_TEST);
@@ -227,6 +270,8 @@ void AppOpenGL::display()
 
     glm::vec3 color;
 
+
+
     color = glm::vec3(ImGuiWin::color_figura.x,
                       ImGuiWin::color_figura.y,
                       ImGuiWin::color_figura.z);
@@ -235,16 +280,6 @@ void AppOpenGL::display()
 
     /*  -- [SHAPES] -- */
     //      CONTROLADOR
-
-    if (ImGuiWin::show_smooth)
-    {
-        // sp.setUniform1i("show_smooth", 1);
-        sp.setUniform1i("op_shader", ImGuiWin::shader_opt);
-    }
-    else
-    {
-        sp.setUniform1i("op_shader", 0);
-    }
 
     if (ImGuiWin::show_fill)
     {
@@ -277,7 +312,7 @@ void AppOpenGL::display()
 
     if (ImGuiWin::show_normals)
     {
-        sp.setUniform1i("show_smooth", 0);               // disable smooth
+        sp.setUniform1i("op_shader", 0); // disable smooth
         sp.setUniform3fv("u_color", glm::vec3(1, 0, 0)); // red - color para las lineas normales
 
         if (ImGuiWin::draw_cube)
@@ -304,6 +339,7 @@ void AppOpenGL::display()
         {
             torusShape.renderNormals();
         }
+        sp.setUniform1i("op_shader", ImGuiWin::shader_opt);
     }
 
     if (ImGuiWin::show_wire)

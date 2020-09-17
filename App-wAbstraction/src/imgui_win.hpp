@@ -41,6 +41,10 @@ namespace ImGuiWin
     bool draw_sphere = false; 
     bool draw_special = false; 
     
+    bool paint_cords_lines = true;
+
+    float mov_ligth = 0.001;
+
     /* SEGMENTS */
     int segments_x = 10;
     int segments_y = 10;
@@ -80,15 +84,44 @@ namespace ImGuiWin
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         
-        ImGui::Begin("Computer Graphics Project - UNMSM - 2020");     
+        ImGui::Begin("Computer Graphics Project - UNMSM - 2020");
+        	ImGui::Separator();
+        	if (ImGui::CollapsingHeader("Autores")){
+				ImGui::TextColored(ImVec4(1,1,0,1), "\t\t\t\t\t\t  UNMSM"  );
+				ImGui::TextColored(ImVec4(1,1,0,1), "\t\t\t\t\t    FISI 2020");
+				ImGui::Indent();
+					ImGui::TextColored(ImVec4(1,1,0,1), "\t\t\t\tCOMPUTACION GRAFICA");
+					ImGui::Text("Profesor");
+					ImGui::BulletText("Herminio Paucar Curasma (@hpaucar)");
+					ImGui::Text("Alumnos");
+					ImGui::BulletText("Galarza Arevalo, Jonathan");
+					ImGui::BulletText("Hidalgo Diaz, Sebastian Eduardo");
+					ImGui::BulletText("Moquillaza Alcarraz, Santiago Yovany");
+					ImGui::BulletText("Ramos Paredes, Roger Anthony");
+					ImGui::BulletText("Rios Jaimes, Jhonel Enrique");
+					ImGui::BulletText("Villarreal Doroteo, Omar");
+					ImGui::Separator();
+				ImGui::Unindent();
+			}
+
+
+			ImGui::Separator();
+
+
                 /* COLOR EDIT */
+
             ImGui::TextColored(ImVec4(1,1,0,1), "Color");
             ImGui::Indent();
                 ImGui::ColorEdit3("Fondo", (float *)&fondo);         
                 ImGui::ColorEdit3("Shape", (float *)&color_figura); 
-            ImGui::Unindent();
+                ImGui::Checkbox("show coordinate system?", &paint_cords_lines);
+			ImGui::Unindent();
+
+
+			ImGui::Separator();
 
                 /* SHAPES */
+
             ImGui::TextColored(ImVec4(1,1,0,1), "Shapes");
             ImGui::Indent();
                 ImGui::Checkbox("Cube", &draw_cube);
@@ -98,39 +131,72 @@ namespace ImGuiWin
                 ImGui::Checkbox("Special", &draw_special);
             ImGui::Unindent();
 
+
+            ImGui::Separator();
+
                 /* MODOS */
+
             ImGui::TextColored(ImVec4(1,1,0,1), "Render");
             ImGui::Indent();
                 ImGui::Checkbox("Wire", &show_wire);
-                ImGui::Checkbox("Smooth", &show_smooth);
+                if (ImGui::Checkbox("Smooth", &show_smooth)){
+                	if (!show_smooth) shader_opt = 0;
+                }
                 ImGui::Checkbox("Fill", &show_fill);
                 ImGui::Checkbox("Normals", &show_normals);
             ImGui::Unindent();
 
+            if (show_smooth){
+                ImGui::Separator();
+
+                ImGui::SliderFloat("movement of light", &mov_ligth ,0, 1);
+            }
+
+            ImGui::Separator();
+
                 /* SEGMENTS */
+
             ImGui::TextColored(ImVec4(1,1,0,1), "Segments");
             ImGui::Indent();
                 if (ImGui::SliderInt("X", &segments_x, MIN_SEGMENTS, MAX_SEGMENTS)) { segments_event_listener = true; } 
                 if (ImGui::SliderInt("Y", &segments_y, MIN_SEGMENTS, MAX_SEGMENTS)) { segments_event_listener = true; }
             ImGui::Unindent();
 
+
+            ImGui::Separator();
+
+            ImGui::Text("");
+            ImGui::Indent(); ImGui::Indent();
+            if (ImGui::Button("Reset transformations (Press 'R')")){
+            	Controls::resetTrans();
+            }
+            ImGui::Unindent(); ImGui::Unindent();
+            ImGui::Text("");
+
+
+            ImGui::Separator();
+
             ImGui::TextColored(ImVec4(1,1,0,1), "Run extra programs!");
-            ImGui::Indent();
-            ImGui::Indent();
-                if (ImGui::Button("MANDELBROT SET")){
+            ImGui::Indent(); ImGui::Indent();
+
+                if (ImGui::Button("Mandelbrot Set")){
                     startup("mandel.exe");
                 }
-                if (ImGui::Button("SHARINGAN")){
+
+                if (ImGui::Button("Sharingan")){
                     startup("sharingan.exe");
                 }
-                if (ImGui::Button("BART SIMPSON")){
+
+                if (ImGui::Button("Bart Simpson")){
                     startup("bart.exe");
                 }
-            ImGui::Unindent();
-            ImGui::Unindent();
+
+            ImGui::Unindent(); ImGui::Unindent();
+
+
+            ImGui::Separator();
             
             /*INDICACIONES*/
-            ImGui::Separator();
             ImGui::Spacing();
             ImGui::TextColored(ImVec4(1,0.5,0,1), "INDICACIONES: ");
 
@@ -154,6 +220,13 @@ namespace ImGuiWin
                 	ImGui::Unindent();
 
             ImGui::Unindent();
+
+            ImGui::Separator();
+
+
+            ImGui::Text("Promedio de aplicacion %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::Separator();
+
 
         ImGui::End();
 
