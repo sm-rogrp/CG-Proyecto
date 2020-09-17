@@ -130,15 +130,26 @@ namespace ImGuiWin
             ImGui::Unindent();
             
             /*INDICACIONES*/
+            ImGui::Separator();
             ImGui::TextColored(ImVec4(1,0.5,0,1), "INDICACIONES: ");
+
             ImGui::Indent();
-                ImGui::TextColored(ImVec4(1,0.5,0,1), "_USE LAS TECLAS A-W-S-D: ");
-                ImGui::TextColored(ImVec4(1,0.5,0,1), "PARA MOVERSE A LA IZQUIERDA,ARRIBA,");
-                ImGui::TextColored(ImVec4(1,0.5,0,1), "ABAJO Y ARRIBA RESPECTIVAMENTE ");
-                ImGui::TextColored(ImVec4(1,0.5,0,1), "_RUEDA DEL MOUSE: ");
-                ImGui::TextColored(ImVec4(1,0.5,0,1), "ALEJARSE Y ACERCARSE(ZOOM) ");
-                ImGui::TextColored(ImVec4(1,0.5,0,1), "_CLICK DERECHO: ");
-                ImGui::TextColored(ImVec4(1,0.5,0,1), "PARA ROTAR ");
+            	ImGui::TextColored(ImVec4(1,0.5,0,1), "> USE LAS TECLAS W-A-S-D: ");
+            	ImGui::Indent();
+                	ImGui::TextColored(ImVec4(1,0.5,0,1), "PARA MOVERSE A LA ARRIBA, IZQUIERDA,");
+                	ImGui::TextColored(ImVec4(1,0.5,0,1), "ABAJO Y DERECHA RESPECTIVAMENTE ");
+                	ImGui::Unindent();
+
+                ImGui::TextColored(ImVec4(1,0.5,0,1), "> RUEDA DEL MOUSE: ");
+                ImGui::Indent();
+                	ImGui::TextColored(ImVec4(1,0.5,0,1), "ALEJARSE Y ACERCARSE (ZOOM) ");
+                	ImGui::Unindent();
+
+                ImGui::TextColored(ImVec4(1,0.5,0,1), "> CLICK DERECHO Y ARRASTRAR EL MOUSE: ");
+                ImGui::Indent();
+                	ImGui::TextColored(ImVec4(1,0.5,0,1), "PARA ROTAR LA FIGURA");
+                	ImGui::Unindent();
+
             ImGui::Unindent();
 
         ImGui::End();
