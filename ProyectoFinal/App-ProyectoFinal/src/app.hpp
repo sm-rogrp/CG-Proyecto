@@ -281,6 +281,8 @@ void AppOpenGL::display()
     /*  -- [SHAPES] -- */
     //      CONTROLADOR
 
+    sp.setUniform1i("op_shader", ImGuiWin::shader_opt); // active shader
+
     if (ImGuiWin::show_fill)
     {
         if (ImGuiWin::draw_cube)
@@ -339,12 +341,12 @@ void AppOpenGL::display()
         {
             torusShape.renderNormals();
         }
-        sp.setUniform1i("op_shader", ImGuiWin::shader_opt);
     }
+
+    sp.setUniform1i("op_shader", ImGuiWin::shader_opt);
 
     if (ImGuiWin::show_wire)
     {
-        sp.setUniform1i("show_smooth", 0);               // disable smooth
         sp.setUniform3fv("u_color", glm::vec3(1, 1, 0)); // color amarillo
 
         if (ImGuiWin::draw_cube)
