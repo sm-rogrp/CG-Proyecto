@@ -1,4 +1,10 @@
 # Proyecto de Computación Gráfica 2020-I
+[![GL](https://img.shields.io/badge/OpenGL-4.3-green)](https://www.opengl.org/documentation/)
+[![GLFW](https://img.shields.io/badge/GLFW-3.3.2-green)](https://www.glfw.org/docs/3.3.2/)
+[![GLEW](https://img.shields.io/badge/GLEW-2.1.0-green)](http://glew.sourceforge.net/)
+[![IMGUI](https://img.shields.io/badge/ImGUI-1.78-green)](https://github.com/ocornut/imgui/releases)
+[![DOC](https://img.shields.io/badge/Documentación-1.0-blue)](https://darkblood202.github.io/CG-Proyecto-doc/)
+
 ## Descripción
 Aplicación de visualización de figuras en 3D, utilizando OpenGL, GLFW y GLEW.
 
