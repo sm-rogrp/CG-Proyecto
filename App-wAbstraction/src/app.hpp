@@ -177,7 +177,7 @@ void AppOpenGL::setup()
     coneShape.initData();
 
     cubeShape.createVertexObjects();
-    cubeShape.buildVerticesSmooth();
+    cubeShape.initData();
     /*  -- [SHAPES] -- */
 
 
@@ -414,6 +414,14 @@ void AppOpenGL::display()
         torusShape.setProp(ImGuiWin::tor_R, ImGuiWin::tor_r);
         torusShape.initData();
         ImGuiWin::tor_prop_listener = false;
+    }
+
+    if (ImGuiWin::cub_prop_listener)
+    {
+        cubeShape.setProp(ImGuiWin::cub_rad, ImGuiWin::cub_val);
+        cubeShape.initData();
+        ImGuiWin::cub_prop_listener = false;
+
     }
 
     ImGuiWin::renderMainWindow();

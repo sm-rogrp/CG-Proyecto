@@ -74,9 +74,13 @@ namespace ImGuiWin
     float tor_r = 0.05;
     void editPropTorus();
 
-    void startup(LPCSTR lpApplicationName);
+    /* PPOPIEDADES CUBE */
+    bool cub_prop_listener = false;
+    int cub_val = 0;
+    float cub_rad = 0.1f;
+    void editPropCube();
 
-    float varRad[5];
+    void startup(LPCSTR lpApplicationName);
 
     void renderMainWindow()
     {
@@ -235,6 +239,7 @@ namespace ImGuiWin
         if (draw_cone) editPropCone();
         if (draw_sphere) editPropSphere();
         if (draw_special) editPropTorus();
+        if (draw_cube) editPropCube();
 
         if (show_smooth) optShaders();
 
@@ -249,14 +254,12 @@ namespace ImGuiWin
         ImGui::End();
     }
 
-    // muestra opciones adicionales para el renderizado de la figura
-    // void optFigure(std::string title, SHAPE shp){
-    //     float *varRadio;
-    //     varRadio = &varRad[shp];
-    //     ImGui::Begin(title.c_str());
-    //     if (ImGui::SliderFloat("Radio", varRadio, 0.01, 0.9)) { segments_event_listener = true; }
-    //     ImGui::End();
-    // }
+    void editPropCube(){
+         ImGui::Begin("Cube");
+         if (ImGui::SliderInt("Subsegments", &cub_val , 0, 5)) { cub_prop_listener = true; }
+         if (ImGui::SliderFloat("Radio", &cub_rad , 0, 1)) { cub_prop_listener = true; }
+         ImGui::End();
+     }
 
     void editPropCylinder(){
         ImGui::Begin("Cylinder");

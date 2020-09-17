@@ -12,7 +12,7 @@ Cubesphere::Cubesphere(float radius, int sub, bool smooth) : radius(radius), sub
 }
 
 
-void Cubesphere::buildVerticesSmooth()
+void Cubesphere::initData()
 {
     // generate unit-length verties in +X face
     std::vector<float> unitVertices = Cubesphere::getUnitPositiveX(vertexCountPerRow);

@@ -63,7 +63,7 @@ public:
     // member functions
     void clearArrays();
     void updateRadius();
-    void buildVerticesSmooth();
+    void initData();
     void addVertex(float x, float y, float z);
     void addVertices(const float v1[3], const float v2[3], const float v3[3], const float v4[3]);
     void addNormal(float nx, float ny, float nz);
@@ -103,6 +103,13 @@ public:
     void renderFill() const; 
     void renderWire() const;    
     void renderNormals() const;
+
+    void setProp(float rad, int subseg){
+        radius = rad; 
+        subdivision = subseg;
+        vertexCountPerRow = (unsigned int)pow(2, subseg) + 1;
+        vertexCountPerFace = vertexCountPerRow * vertexCountPerRow;
+    }
 
     // interleaved
     std::vector<float> interleavedVertices;
