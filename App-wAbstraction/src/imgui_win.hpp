@@ -131,6 +131,7 @@ namespace ImGuiWin
             
             /*INDICACIONES*/
             ImGui::Separator();
+            ImGui::Spacing();
             ImGui::TextColored(ImVec4(1,0.5,0,1), "INDICACIONES: ");
 
             ImGui::Indent();
@@ -140,11 +141,13 @@ namespace ImGuiWin
                 	ImGui::TextColored(ImVec4(1,0.5,0,1), "ABAJO Y DERECHA RESPECTIVAMENTE ");
                 	ImGui::Unindent();
 
+                ImGui::Spacing();
                 ImGui::TextColored(ImVec4(1,0.5,0,1), "> RUEDA DEL MOUSE: ");
                 ImGui::Indent();
                 	ImGui::TextColored(ImVec4(1,0.5,0,1), "ALEJARSE Y ACERCARSE (ZOOM) ");
                 	ImGui::Unindent();
 
+                ImGui::Spacing();
                 ImGui::TextColored(ImVec4(1,0.5,0,1), "> CLICK DERECHO Y ARRASTRAR EL MOUSE: ");
                 ImGui::Indent();
                 	ImGui::TextColored(ImVec4(1,0.5,0,1), "PARA ROTAR LA FIGURA");
